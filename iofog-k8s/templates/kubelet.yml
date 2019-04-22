@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iofog-kubelet
+  namespace: {{ .Values.namespace }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: iofog-kubelet
+subjects:
+  - kind: ServiceAccount
+    name: iofog-kubelet
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubelet
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: kubelet
+spec:
+  replicas: {{ .Values.kubelet.replicas }}
+  selector:
+    matchLabels:
+      name: kubelet
+  template:
+    metadata:
+      labels:
+        name: kubelet
+    spec:
+      serviceAccountName: iofog-kubelet
+      containers:
+      - name: kubelet
+        image: {{ .Values.kubelet.image.repository }}:{{ .Values.kubelet.image.tag }}
+        imagePullPolicy: {{ .Values.kubelet.image.pullPolicy }}
+        args: 
+        - "--namespace"
+        - {{ .Values.namespace }}
+        - "--iofog-token"
+        - {{ .Values.controller.token }}
+        - "--iofog-url"
+        - {{ .Values.controller.host }}:{{ .Values.controller.port }}

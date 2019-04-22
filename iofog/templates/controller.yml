@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: controller
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  selector:
+    matchLabels:
+      name: controller
+  template:
+    metadata:
+      labels:
+        name: controller
+    spec:
+      containers:
+      - name: controller
+        image: {{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}
+        imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: controller
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.controller.port }}
+      targetPort: {{ .Values.controller.port }}
+      protocol: TCP
+  selector:
+    name: controller

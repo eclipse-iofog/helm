@@ -1,0 +1,16 @@
+namespace: iofog
+
+controller:
+  replicas: 1
+  image: 
+    repository: edgeworx/controller-k8s
+    tag: latest
+    pullPolicy: Always
+  port: 51121
+
+connector:
+  replicas: 1
+  image: 
+    repository: iofog/connector
+    tag: dev
+    pullPolicy: Always

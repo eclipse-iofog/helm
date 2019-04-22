@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: scheduler
+spec:
+  replicas: {{ .Values.scheduler.replicas }}
+  selector:
+    matchLabels:
+      name: scheduler
+  template:
+    metadata:
+      labels:
+        name: scheduler
+    spec:
+      containers:
+      - name: scheduler
+        image: {{ .Values.scheduler.image.repository }}:{{ .Values.scheduler.image.tag }}
+        imagePullPolicy: {{ .Values.scheduler.image.pullPolicy }}
