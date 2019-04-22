@@ -1,0 +1,15 @@
+sudo: required
+
+dist: xenial
+
+services:
+  - docker
+ 
+jobs:
+  include:
+    - stage: bootstrap-deploy-test
+      script:
+      - |
+        script/bootstrap.bash &&
+        export BRANCH=$TRAVIS_BRANCH &&
+        script/push.bash 0.0.1 $GIT_USER $GIT_EMAIL $GIT_TKN
