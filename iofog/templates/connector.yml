@@ -19,3 +19,19 @@ spec:
       - name: connector
         image: {{ .Values.connector.image.repository }}:{{ .Values.connector.image.tag }}
         imagePullPolicy: {{ .Values.connector.image.pullPolicy }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: connector
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: connector
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.connector.port }}
+      targetPort: {{ .Values.connector.port }}
+      protocol: TCP
+  selector:
+    name: connector

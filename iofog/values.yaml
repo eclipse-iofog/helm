@@ -14,3 +14,4 @@ connector:
     repository: iofog/connector
     tag: dev
     pullPolicy: Always
+  port: 8080
