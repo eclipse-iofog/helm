@@ -37,8 +37,8 @@ spec:
       serviceAccountName: iofog-kubelet
       containers:
       - name: kubelet
-        image: {{ .Values.kubelet.image.repository }}:{{ .Values.kubelet.image.tag }}
-        imagePullPolicy: {{ .Values.kubelet.image.pullPolicy }}
+        image: {{ .Values.kubelet.image }}
+        imagePullPolicy: {{ .Values.kubelet.imagePullPolicy }}
         args: 
         - "--namespace"
         - {{ .Values.namespace }}

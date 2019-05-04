@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
       - name: connector
-        image: {{ .Values.connector.image.repository }}:{{ .Values.connector.image.tag }}
-        imagePullPolicy: {{ .Values.connector.image.pullPolicy }}
+        image: {{ .Values.connector.image }}
+        imagePullPolicy: {{ .Values.connector.imagePullPolicy }}
 ---
 kind: Service
 apiVersion: v1

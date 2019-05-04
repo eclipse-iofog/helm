@@ -17,5 +17,5 @@ spec:
     spec:
       containers:
       - name: scheduler
-        image: {{ .Values.scheduler.image.repository }}:{{ .Values.scheduler.image.tag }}
-        imagePullPolicy: {{ .Values.scheduler.image.pullPolicy }}
+        image: {{ .Values.scheduler.image }}
+        imagePullPolicy: {{ .Values.scheduler.imagePullPolicy }}

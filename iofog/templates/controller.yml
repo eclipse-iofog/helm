@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
       - name: controller
-        image: {{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}
-        imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+        image: {{ .Values.controller.image }}
+        imagePullPolicy: {{ .Values.controller.imagePullPolicy }}
 ---
 kind: Service
 apiVersion: v1

@@ -1,30 +1,26 @@
 namespace: iofog
 
+
 controller:
   token: ""
   host: http://controller
   port: 51121
 
+
 scheduler:
   replicas: 1
-  image:
-    repository: iofog/iofog-scheduler
-    tag: develop
-    pullPolicy: Always
+  image: "iofog/iofog-scheduler:develop"
+  imagePullPolicy: Always
 
 operator:
   replicas: 1
-  image:
-    repository: iofog/iofog-operator
-    tag: develop
-    pullPolicy: Always
+  image: "iofog/iofog-operator:develop"
+  imagePullPolicy: Always
   port: 60000
 
 kubelet:
   replicas: 1
-  image:
-    repository: iofog/iofog-kubelet
-    tag: develop
-    pullPolicy: Always
+  image: "iofog/iofog-kubelet:develop"
+  imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443

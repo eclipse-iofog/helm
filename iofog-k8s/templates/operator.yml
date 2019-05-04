@@ -103,13 +103,13 @@ spec:
       serviceAccountName: operator
       containers:
         - name: operator
-          image: {{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}
+          image: {{ .Values.operator.image }}
           ports:
             - containerPort: {{ .Values.operator.port }}
               name: metrics
           command:
             - iofog-operator
-          imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.operator.imagePullPolicy }}
           readinessProbe:
             exec:
               command:
