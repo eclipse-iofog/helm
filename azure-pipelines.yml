@@ -1,0 +1,24 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pr:
+  - master
+
+variables:
+  commit: $(Build.SourceVersion)
+  branch: $(Build.SourceBranch)
+
+jobs:
+  - job: Helm
+    pool:
+      vmImage: 'Ubuntu-16.04'
+
+    steps: 
+      - script: |
+          git config --global user.email "info@edgeworx.io"
+          git config --global user.name "Azure DevOps"
+          ./script/bootstrap.bash
+          ./script/push.bash 0.0.1 $(git.token)
+        displayName: 'Build and push'
