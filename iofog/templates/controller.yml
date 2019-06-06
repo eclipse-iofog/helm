@@ -29,6 +29,9 @@ metadata:
     name: controller
 spec:
   type: LoadBalancer
+  {{- if .Values.controller.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.controller.loadBalancerIP }}
+  {{- end }}
   ports:
     - port: {{ .Values.controller.port }}
       targetPort: {{ .Values.controller.port }}

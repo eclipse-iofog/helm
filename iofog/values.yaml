@@ -5,6 +5,7 @@ controller:
   image: "edgeworx/controller-k8s:latest"
   imagePullPolicy: Always
   port: 51121
+  loadBalancerIP: ""
 
 connector:
   replicas: 1
