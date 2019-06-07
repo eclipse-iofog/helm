@@ -19,6 +19,8 @@ spec:
       - name: controller
         image: {{ .Values.controller.image }}
         imagePullPolicy: {{ .Values.controller.imagePullPolicy }}
+        ports:
+          - containerPort: {{ .Values.controller.targetPort }}
 ---
 kind: Service
 apiVersion: v1
@@ -31,7 +33,7 @@ spec:
   type: LoadBalancer
   ports:
     - port: {{ .Values.controller.port }}
-      targetPort: {{ .Values.controller.port }}
+      targetPort: {{ .Values.controller.targetPort }}
       protocol: TCP
   selector:
     name: controller
