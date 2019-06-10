@@ -35,17 +35,49 @@ spec:
         name: kubelet
     spec:
       serviceAccountName: iofog-kubelet
+      volumes:
+        - name: conf
+          emptyDir: {}
       initContainers:
         - name: wait-for-controller
           image: fmiguelez/alpine-curl-jq:latest
           env:
             - name: CONTROLLER_URL
               value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
-          command: ['sh', '-c', 'until [[ $(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status") == "online" ]]; do echo "Waiting for Controller..."; sleep 5; done']
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
+                echo "Waiting for Controller at ${CONTROLLER_URL}..."
+                sleep 5
+              done
+        - name: user-login
+          image: fmiguelez/alpine-curl-jq:latest
+          volumeMounts:
+            - mountPath: /conf
+              name: conf
+          env:
+            - name: CONTROLLER_URL
+              value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [[ -n "${TOKEN}" && "${TOKEN}" != "null" ]]; do
+                TOKEN="$(curl -X POST http://controller:51121/api/v3/user/login \
+                             -H 'Content-Type: application/json' \
+                             -d '{"email":"user@domain.com","password":"#Bugs4Fun"}' 2>/dev/null \
+                             | jq -r '.accessToken')"
+              done
+              echo "${TOKEN}" > /conf/login-token
       containers:
       - name: kubelet
         image: {{ .Values.kubelet.image }}
         imagePullPolicy: {{ .Values.kubelet.imagePullPolicy }}
+        volumeMounts:
+          - mountPath: /conf
+            name: conf
         args: 
         - "--namespace"
         - {{ .Values.namespace }}

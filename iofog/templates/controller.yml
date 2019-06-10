@@ -15,12 +15,40 @@ spec:
       labels:
         name: controller
     spec:
+      serviceAccountName: k8s-role-svc-info
+      volumes:
+        - name: conf
+          emptyDir: {}
+      initContainers:
+      - name: wait-for-connector-ip
+        image: bitnami/kubectl:latest
+        command:
+          - /bin/bash
+          - -c
+          - |
+            until [[ -n "${CONNECTOR_IP}" ]]; do
+              CONNECTOR_IP=$(kubectl get svc connector -o jsonpath={.status.loadBalancer.ingress[0].ip})
+            done
+            echo "${CONNECTOR_IP}" > /conf/connector.ip
+        volumeMounts:
+          - mountPath: /conf
+            name: conf
       containers:
       - name: controller
         image: {{ .Values.controller.image }}
         imagePullPolicy: {{ .Values.controller.imagePullPolicy }}
         ports:
           - containerPort: {{ .Values.controller.targetPort }}
+        volumeMounts:
+          - mountPath: /conf
+            name: conf
+        command:
+          - /bin/sh
+          - -c
+          - |
+            iofog-controller start \
+            && iofog-controller connector add -n gke -d connector --dev-mode-on -i $(cat /conf/connector.ip) \
+            && tail -f /dev/null
 ---
 kind: Service
 apiVersion: v1
@@ -37,3 +65,21 @@ spec:
       protocol: TCP
   selector:
     name: controller
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: k8s-role-svc-info
+subjects:
+  - kind: ServiceAccount
+    name: k8s-role-svc-info
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-role-svc-info

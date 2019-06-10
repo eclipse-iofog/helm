@@ -21,10 +21,14 @@ spec:
           env:
             - name: CONTROLLER_URL
               value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
-          command: ['sh', '-c', 'until [[ $(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status") == "online" ]]; do echo "Waiting for Controller..."; sleep 5; done']
-        - name: wait-for-connector-ip
-          image: bitnami/kubectl:latest
-          command: ['sh', '-c', 'kubectl help; tail -f /dev/null']
+          command:
+          - /bin/sh
+          - -c
+          - |
+            until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
+              echo "Waiting for Controller at ${CONTROLLER_URL}..."
+              sleep 5
+            done
       containers:
       - name: connector
         image: {{ .Values.connector.image }}
@@ -45,21 +49,3 @@ spec:
       protocol: TCP
   selector:
     name: connector
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: k8s-role-svc-info
-subjects:
-  - kind: ServiceAccount
-    name: k8s-role-svc-info
-    namespace: default
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: k8s-role-svc-info

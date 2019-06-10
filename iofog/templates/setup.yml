@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-controller
+        image: fmiguelez/alpine-curl-jq:latest
+        env:
+          - name: CONTROLLER_URL
+            value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+        command:
+          - /bin/sh
+          - -c
+          - |
+            until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
+              echo "Waiting for Controller at ${CONTROLLER_URL}..."
+              sleep 5
+            done
+      containers:
+      - name: create-user
+        image: fmiguelez/alpine-curl-jq:latest
+        env:
+          - name: CONTROLLER_URL
+            value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo -n "Creating user John Doe... "
+            RET=$(curl --request POST --url "${CONTROLLER_URL}/user/signup" \
+                --header 'Content-Type: application/json' \
+                --data '{"email":"user@domain.com","firstName":"John","lastName":"Doe","password":"#Bugs4Fun"}' \
+                2>/dev/null)
+            RET_MSG=$(echo $RET | jq -r '.message')
+            RET_UID=$(echo $RET | jq -r '.userId')
+            [[ "${RET_MSG}" == "null" ]] && echo "${RET_UID}" || echo "${RET_MSG}"
+      restartPolicy: Never
+  backoffLimit: 1

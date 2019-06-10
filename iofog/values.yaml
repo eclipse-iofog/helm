@@ -2,12 +2,12 @@ namespace: iofog
 
 controller:
   replicas: 1
-  image: "iofog/controller:dev"
+  image: "iofog/controller-develop:latest"
   imagePullPolicy: Always
   token: "INVALID_TOKEN"
   host: http://controller
   port: 51121
-  targetPort: 54421
+  targetPort: 51121
 
 connector:
   replicas: 1
@@ -32,3 +32,4 @@ kubelet:
   imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443
+
