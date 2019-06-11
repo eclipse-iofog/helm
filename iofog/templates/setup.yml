@@ -10,21 +10,21 @@ spec:
         image: fmiguelez/alpine-curl-jq:latest
         env:
           - name: CONTROLLER_URL
-            value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+            value: "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
         command:
           - /bin/sh
           - -c
           - |
             until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
               echo "Waiting for Controller at ${CONTROLLER_URL}..."
-              sleep 5
+              sleep 2
             done
       containers:
       - name: create-user
         image: fmiguelez/alpine-curl-jq:latest
         env:
           - name: CONTROLLER_URL
-            value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+            value: "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
         command:
           - /bin/sh
           - -c

@@ -17,6 +17,14 @@ roleRef:
   name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: v1
+data:
+  login-token: ""
+kind: Secret
+metadata:
+  name: login-token
+type: Opaque
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -43,14 +51,13 @@ spec:
           image: fmiguelez/alpine-curl-jq:latest
           env:
             - name: CONTROLLER_URL
-              value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
-          command:
-            - /bin/sh
-            - -c
+              value: "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+          command: ['sh', '-c']
+          args:
             - |
               until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
                 echo "Waiting for Controller at ${CONTROLLER_URL}..."
-                sleep 5
+                sleep 2
               done
         - name: user-login
           image: fmiguelez/alpine-curl-jq:latest
@@ -59,29 +66,41 @@ spec:
               name: conf
           env:
             - name: CONTROLLER_URL
-              value: "{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
-          command:
-            - /bin/sh
-            - -c
+              value: "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+          command: ['sh', '-c']
+          args:
             - |
               until [[ -n "${TOKEN}" && "${TOKEN}" != "null" ]]; do
                 TOKEN="$(curl -X POST http://controller:51121/api/v3/user/login \
                              -H 'Content-Type: application/json' \
                              -d '{"email":"user@domain.com","password":"#Bugs4Fun"}' 2>/dev/null \
                              | jq -r '.accessToken')"
+                sleep 2
               done
-              echo "${TOKEN}" > /conf/login-token
+              echo -n "${TOKEN}" > /conf/login-token
+        - name: login-to-secret
+          image: bitnami/kubectl:latest
+          volumeMounts:
+            - mountPath: /conf
+              name: conf
+          command: ['bash', '-c']
+          args:
+            - |
+              kubectl create secret generic login-token --from-file=/conf/login-token --dry-run -o yaml | kubectl apply -f -
       containers:
       - name: kubelet
         image: {{ .Values.kubelet.image }}
         imagePullPolicy: {{ .Values.kubelet.imagePullPolicy }}
-        volumeMounts:
-          - mountPath: /conf
-            name: conf
-        args: 
+        env:
+          - name: LOGIN_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: login-token
+                key: login-token
+        args:
         - "--namespace"
         - {{ .Values.namespace }}
         - "--iofog-token"
-        - {{ .Values.controller.token | quote }}
+        - $(LOGIN_TOKEN)
         - "--iofog-url"
-        - {{ .Values.controller.host }}:{{ .Values.controller.port }}
+        - "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}"

@@ -4,10 +4,8 @@ controller:
   replicas: 1
   image: "iofog/controller-develop:latest"
   imagePullPolicy: Always
-  token: "INVALID_TOKEN"
-  host: http://controller
+  host: controller
   port: 51121
-  targetPort: 51121
 
 connector:
   replicas: 1
