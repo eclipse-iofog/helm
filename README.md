@@ -2,45 +2,32 @@
 
 This repository is used to serve Helm packages of ioFog Kubernetes.
 
+
+# Prerequisites
+
+The following commands require an installation of `Helm` and `kubectl` executing the deployment. It also assumes you have a running Kubernetes cluster and Agent nodes.
+
+* [Helm installation instructions](https://helm.sh/docs/using_helm/#installing-helm)
+* [kubectl installation instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
 # Usage
 
-The following commands require an installation of Helm, jq, and curl from the machine executing the deployment. It also assumes you have a running Kubernetes cluster and Agent nodes.
+## Install ioFog Stack
 
-Add this repository to your Helm repository index
+Add this repository to your Helm repository index and install the ioFog stack and Kubernetes services
+
 ```
 helm repo add iofog https://eclipse-iofog.github.io/helm
+helm install --name iofog --namespace iofog ./iofog 
 ```
-Install Controller and Connector to cluster
-```
-helm install iofog/iofog
-```
-Wait for Controller to obtain an external IP address and then create a user and access token. Use the access token to install ioFog Kubelet, Scheduler, and Operator
-```
-IP=""
-while [ -z "$IP" ] ; do
-  IP=$(kubectl get svc controller --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}" -n iofog)
-  [ -z "$IP" ] && sleep 10
-done
-PORT=51121
 
-USER_RESULT=$(curl \--request POST \
-http://"$IP":"$PORT"/api/v3/user/signup \
---header 'Content-Type: application/json' \
---data '{ "firstName": "Dev", "lastName": "Test", "email": "user@domain.com", "password": "#Bugs4Fun" }')
-echo "$USER_RESULT"
+## Add Agents
 
-AUTH_RESULT=$(curl --request POST \
---url http://"$IP":"$PORT"/api/v3/user/login \
---header 'Content-Type: application/json' \
---data '{"email":"user@domain.com","password":"#Bugs4Fun"}')
-echo "$AUTH_RESULT"
-
-TOKEN=$(echo "$AUTH_RESULT" | jq -r .accessToken)
-helm install iofog/iofog-k8s --set-string controller.token="$TOKEN"
-```
 Integrate on-cluster Controller with Agents at the edge. Note that this must be run from within the Agent machine
 ```
-IP=<controller_ip>
-iofog-agent config -a http://"$IP":51121/api/v3/
-```
+# From a device with sufficient Kubernetes cluster permissions:
+CONNECTOR_IP=$(kubectl -n iofog get svc connector -o jsonpath={.status.loadBalancer.ingress[0].ip})
 
+# From a device or a container running your ioFog Agent: 
+iofog-agent config -a "http://${CONNECTOR_IP}:51121/api/v3/"
+```
