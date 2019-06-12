@@ -1,24 +1,65 @@
 trigger:
-  branches:
-    include:
-      - master
-
+  - ci-unify-helm
 pr:
   - master
 
-variables:
-  commit: $(Build.SourceVersion)
-  branch: $(Build.SourceBranch)
-
 jobs:
-  - job: Helm
-    pool:
-      vmImage: 'Ubuntu-16.04'
+    - job: Helm
+      variables:
+        commit: $(Build.SourceVersion)
+        branch: $(Build.SourceBranch)
+        namespace: iofog-helm-$(Build.SourceVersion)
 
-    steps: 
-      - script: |
-          git config --global user.email "info@edgeworx.io"
-          git config --global user.name "Azure DevOps"
-          ./script/bootstrap.bash
-          ./script/push.bash 0.0.1 $(git.token)
-        displayName: 'Build and push'
+      pool:
+        vmImage: 'Ubuntu-16.04'
+
+      steps:
+        - displayName: 'Helm init'
+          task: HelmDeploy@0
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureResourceGroup: $(azureResourceGroup)
+            kubernetesCluster: $(kubernetesCluster)
+            command: init
+            upgradetiller: true
+            waitForExecution: true
+            arguments: --client-only
+#        - displayName: 'Bootstrap required tools'
+#          script: ./script/bootstrap.sh
+#        - displayName: 'Check Kubernetes Cluster'
+#          script: |
+#            export KUBECONFIG=
+#            gcloud container clusters list --filter=name=lkrcal-6809978de35e5bad --zone asia-southeast1
+#        - displayName: 'Configure Kubernetes cluster connection'
+#          script: |
+#            kubectl config view
+#            ACCESS_TOKEN=$(kubectl config view \
+#              -o jsonpath='{.users[?(@.name == "gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad")].user.auth-provider.config.access-token}')
+#            echo "ACCESS_TOKEN: ${ACCESS_TOKEN}"
+#        - Bootstrap
+#        - Check connectivity to kubernetes environment
+#        - Check connectivity to agent
+#        - Install helm
+#        - Initialize agent
+#        - Run test-runner
+#        - Report test results
+#        - Uninstall --purge helm (always)
+#        - Collect all logs (always)
+#        - Push release (only if on master)
+#        - script: |
+#            git config --global user.email "info@edgeworx.io"
+#            git config --global user.name "Azure DevOps"
+#            ./script/bootstrap.bash
+#            ./script/push.bash 0.0.1 $(git.token)
+#          displayName: 'Build and push'
+#
+#        - task: DockerInstaller@0
+#          displayName: Docker Installer
+#          inputs:
+#            dockerVersion: 18.09.2
+#            releaseType: stable
+#
+#        - script: |
+#            echo $(gcp.svcacc) | docker login -u _json_key --password-stdin https://gcr.io
+#          displayName: 'Docker connect to Registry'
+
