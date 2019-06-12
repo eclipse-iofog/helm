@@ -6,7 +6,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   name: role-get-connector-service
 rules:
   - apiGroups: [""]
@@ -21,7 +21,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: svacc-iofog-controller
-    namespace: {{ .Values.namespace }}
+    namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 roleRef:
   kind: Role
   name: role-get-connector-service
@@ -31,7 +31,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: controller
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: controller
 spec:
@@ -82,7 +82,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ .Values.controller.host }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: controller
 spec:

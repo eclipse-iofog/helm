@@ -1,4 +1,4 @@
-namespace: iofog
+defaultNamespace: "iofog"
 
 controller:
   replicas: 1

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: connector
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: connector
 spec:
@@ -37,7 +37,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: connector
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: connector
 spec:
