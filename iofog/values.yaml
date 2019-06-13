@@ -1,5 +1,7 @@
 defaultNamespace: "iofog"
 
+createCustomResource: true
+
 controller:
   replicas: 1
   image: "iofog/controller-develop:latest"
