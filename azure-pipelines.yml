@@ -4,42 +4,158 @@ pr:
   - master
 
 jobs:
-    - job: Helm
-      variables:
-        commit: $(Build.SourceVersion)
-        branch: $(Build.SourceBranch)
-        namespace: iofog-helm-$(Build.SourceVersion)
+  - job: Helm
+    variables:
+      - group: pipelines
+      - name: commit
+        value: $(Build.SourceVersion)
+      - name: branch
+        value: $(Build.SourceBranch)
+      - name: kubernetesNamespace
+        value: 'iofog-helm-ci-$(Build.BuildId)'
+      - name: helmReleaseName
+        value: 'iofog-helm-ci-$(Build.BuildId)'
 
-      pool:
-        vmImage: 'Ubuntu-16.04'
+    pool:
+      vmImage: 'Ubuntu-16.04'
 
-      steps:
-        - displayName: 'Helm init'
-          task: HelmDeploy@0
-          inputs:
-            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-            azureResourceGroup: $(azureResourceGroup)
-            kubernetesCluster: $(kubernetesCluster)
-            command: init
-            upgradetiller: true
-            waitForExecution: true
-            arguments: --client-only
-#        - displayName: 'Bootstrap required tools'
-#          script: ./script/bootstrap.sh
-#        - displayName: 'Check Kubernetes Cluster'
-#          script: |
-#            export KUBECONFIG=
-#            gcloud container clusters list --filter=name=lkrcal-6809978de35e5bad --zone asia-southeast1
-#        - displayName: 'Configure Kubernetes cluster connection'
-#          script: |
-#            kubectl config view
-#            ACCESS_TOKEN=$(kubectl config view \
-#              -o jsonpath='{.users[?(@.name == "gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad")].user.auth-provider.config.access-token}')
-#            echo "ACCESS_TOKEN: ${ACCESS_TOKEN}"
-#        - Bootstrap
-#        - Check connectivity to kubernetes environment
-#        - Check connectivity to agent
-#        - Install helm
+    steps:
+      - task: HelmDeploy@0
+        displayName: 'Helm init'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          namespace: $(kubernetesNamespace)
+          command: init
+          upgradetiller: false
+          waitForExecution: true
+          arguments: --client-only
+
+      - task: Kubernetes@1
+        displayName: 'Check custom resource definition exists'
+        continueOnError: true
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: get
+          arguments: crd iofogs.k8s.iofog.org
+          outputFormat: jsonpath='{.metadata.uid}'
+
+      - bash: |
+          env
+          echo "KUBERNETES1_KUBECTLOUTPUT: ${KUBERNETES1_KUBECTLOUTPUT}"
+          if [[ -z "${KUBERNETES1_KUBECTLOUTPUT}" ]]; then
+            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]true'
+          else
+            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]false'
+          fi
+
+      - task: HelmDeploy@0
+        displayName: 'Helm install ioFog'
+        timeoutInMinutes: 10
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          namespace: $(kubernetesNamespace)
+          command: install
+          arguments: --set createCustomResource=$(CREATE_CUSTOM_RESOURCE)
+          chartType: FilePath
+          chartPath: iofog
+          releaseName: $(helmReleaseName)
+
+      - task: Kubernetes@1
+        displayName: 'Print all resources created'
+        condition: always()
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: get
+          arguments: all
+          namespace: $(kubernetesNamespace)
+          outputFormat: yaml
+      
+      - task: Kubernetes@1
+        displayName: 'Get controller public IP and port'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: get
+          namespace: $(kubernetesNamespace)
+          arguments: svc controller
+          outputFormat: jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}'
+
+      - bash: |
+          env
+          echo "KUBERNETES3_KUBECTLOUTPUT: ${KUBERNETES3_KUBECTLOUTPUT}"
+          echo '##vso[task.setvariable variable=CONTROLLER_PUBLIC_IP_PORT]${KUBERNETES3_KUBECTLOUTPUT}'
+      
+      - task: Go@0
+        displayName: 'Download iofogctl'
+        inputs:
+          command: get
+          arguments: -u -v github.com/eclipse-iofog/iofogctl/cmd/iofogctl
+
+      - bash: ~/go/bin/iofogctl --help
+        displayName: Check iofogctl'
+
+      - bash: |
+          echo iofogctl connect "$(kubernetesNamespace)-controller" -o "${CONTROLLER_PUBLIC_IP_PORT}"" -e "user@domain.com"  -p '#Bugs4Fun' -n "$(kubernetesNamespace)"
+          ~/go/bin/iofogctl connect "$(kubernetesNamespace)-controller" -o "${CONTROLLER_PUBLIC_IP_PORT}"" -e "user@domain.com"  -p '#Bugs4Fun' -n "$(kubernetesNamespace)"
+        displayName: Connect controller to iofogctl'
+
+      - task: DownloadSecureFile@1
+        inputs:
+          secureFile: lkrcal-agent1key
+
+      - bash: |
+          env
+          echo "DOWNLOADSECUREFILE_SECUREFILEPATH: ${DOWNLOADSECUREFILE_SECUREFILEPATH}"
+          ls -l "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
+
+      - bash: |
+          echo iofogctl deploy agent -n "$(kubernetesNamespace)" agent-test --user $(testAgentUsername) --host $(testAgentIp) --key-file "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
+          ~/go/bin/iofogctl iofogctl deploy agent -n "$(kubernetesNamespace)" agent-test --user $(testAgentUsername) --host $(testAgentIp) --key-file "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
+        displayName: Connect controller to iofogctl'
+
+      - bash: cat ~/.iofog.yaml
+        displayName: 'Print configuration of iofogctl'
+
+      - task: HelmDeploy@0
+        displayName: 'Helm delete'
+        condition: always()
+        continueOnError: true
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: delete
+          arguments: '--purge $(helmReleaseName)'
+
+      - task: Kubernetes@1
+        displayName: 'Delete Kubernetes namespace'
+        condition: always()
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: delete
+          arguments: ns $(kubernetesNamespace)
+
+      - task: HelmDeploy@0
+        displayName: Helm package
+        inputs:
+          command: package
+          chartPath: iofog
+          destination: $(Build.ArtifactStagingDirectory)
+
+      - bash: |
+          ARCHIVE_BASENAME=$(basename $(find $(Build.ArtifactStagingDirectory) -name '*.tgz' | head -n1))
+          echo "##vso[task.setvariable variable=ARCHIVE_BASENAME]${ARCHIVE_BASENAME}"
+      
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'iofog-helm-chart'
+          targetPath: $(Build.ArtifactStagingDirectory)/$(ARCHIVE_BASENAME)
+
+#        TODO:
 #        - Initialize agent
 #        - Run test-runner
 #        - Report test results
