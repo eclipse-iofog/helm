@@ -10,6 +10,8 @@ The following commands require an installation of `Helm` and `kubectl` executing
 * [Helm installation instructions](https://helm.sh/docs/using_helm/#installing-helm)
 * [kubectl installation instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
+Note that on GKE, it is necessary to create a service account for Tiller before initializing helm. See [helm init instructions](https://helm.sh/docs/using_helm/#tiller-and-role-based-access-control) for more details.
+
 # Usage
 
 ## Install ioFog Stack
@@ -21,7 +23,7 @@ helm repo add iofog https://eclipse-iofog.github.io/helm
 helm install --name iofog --namespace iofog iofog/iofog
 ```
 
-### Mutliple Instances of ioFog stack
+### Multiple Instances of ioFog Stack
 
 If you want to have multiple instances of ioFog on the same Kubernetes cluster, it is necessary to tell Helm not to install custom resource definitions. This can be done by overriding the `createCustomResource` (default: `true`) variable.
 
@@ -50,7 +52,10 @@ Note that due to Helm's handing of custom resource definitions, all such definit
 kubectl delete crd iofogs.k8s.iofog.org 
 ```
 
-## Testing ioFog stack
+
+## Testing ioFog Stack With Agent
+
+### Credentials For ioFog Agent
 
 In order to test the ioFog stack, we will need access to a single ioFog agent. Note that this agent is external to the Kubernetes cluster, but its credentials need to be stored as a secret in the cluster.
 
@@ -72,19 +77,35 @@ When the secret and the agent are available, upgrade your Helm release to refere
 helm upgrade iofog --namespace iofog --set createCustomResource=false --set test.credentials=agent-credentials iofog/iofog
 ```
 
-Then run the tests.
+### Register Agent With The ioFog Stack
+
+Now is the time to register the agent with the rest of the ioFog stack. For this purpose, use [iofogctl](https://github.com/eclipse-iofog/iofogctl).
+
+```bash
+iofogctl connect -n iofog iofog-test-controller \
+  -o $(kubectl -n iofog get svc controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}') \
+  -e user@domain.com  -p '#Bugs4Fun' 
+
+iofogctl deploy agent -n iofog-test agent1 --user username --host 34.66.151.77 --key-file /home/username/.ssh/agent-key
+```
+
+Note that the arguments for agent deployment are the same as the credentials we provided to the secret.
+
+### Run Tests
+
+Then run the tests using Helm.
 
 ```bash
 helm test iofog
 ```
 
-## Add Agents
+## Known Issues
 
-Integrate on-cluster Controller with Agents at the edge. Note that this must be run from within the Agent machine
-```bash
-# From a device with sufficient Kubernetes cluster permissions:
-CONNECTOR_IP=$(kubectl -n iofog get svc connector -o jsonpath={.status.loadBalancer.ingress[0].ip})
+When deploying agent for testing purposes, it is possible to encounter a SSH bug in GKE. This disables Helm completely due to its inability to communicate with Tiller.
 
-# From a device or a container running your ioFog Agent: 
-iofog-agent config -a "http://${CONNECTOR_IP}:51121/api/v3/"
+```console
+$ helm list
+Error: forwarding ports: error upgrading connection: error dialing backend: No SSH tunnels currently open. Were the targets able to accept an ssh-key for user "gke-0e29ce169876a2a9afc0"?
 ```
+
+There is currently no known workaround.

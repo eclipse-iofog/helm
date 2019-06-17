@@ -63,11 +63,16 @@ spec:
           CTRL_IP_PORT=$(kubectl get svc controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}')
           echo -n "${CTRL_IP_PORT}" > /conf/controller.conf
 
-          cp -H /secrets/agents.conf /conf
-          cp -H /secrets/id_ecdsa /conf
+          touch /conf/id_ecdsa
+          cp -f -H /secrets/id_ecdsa /conf
 
+          cp -f -H /secrets/agents.conf /conf
           # Insert newline at the end of /conf/agents.conf in case there is none
-          [[ ! $(tail -c1 /conf/agents.conf | wc -l) -gt 0 ]] && echo >> /conf/agents.conf
+          if [[ -f "/tmp/agents.conf" ]]; then
+            [[ ! $(tail -c1 /conf/agents.conf | wc -l) -gt 0 ]] && echo >> /conf/agents.conf
+          else
+            touch /conf/agents.conf
+          fi
       volumeMounts:
         - name: config-volume
           mountPath: /conf
@@ -95,6 +100,5 @@ spec:
                 path: id_ecdsa
               - key: URI
                 path: agents.conf
-
   restartPolicy: Never
 {{ end }}
