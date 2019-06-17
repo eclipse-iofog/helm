@@ -1,0 +1,100 @@
+{{ if .Values.test.credentials }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: svacc-test-runner
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role-get-services
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    resourceNames: ["connector", "controller"]
+    verbs: ["get"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: svacc-test-runner
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+subjects:
+  - kind: ServiceAccount
+    name: svacc-test-runner
+    namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+roleRef:
+  kind: Role
+  name: role-get-services
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-runner
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+  labels:
+    name: test-runner
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  serviceAccountName: svacc-test-runner
+  initContainers:
+    - name: get-service-ips
+      image: bitnami/kubectl:latest
+      command: ['bash', '-c']
+      args:
+        - |
+          echo "Retrieving connector public IP and port..."
+          until [[ -n "${CONNECTOR_IP}" ]]; do
+            CONNECTOR_IP=$(kubectl get svc connector -o jsonpath={.status.loadBalancer.ingress[0].ip})
+            sleep 2
+          done
+          CONN_IP_PORT=$(kubectl get svc connector -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}')
+          echo -n "${CONN_IP_PORT}" > /conf/connector.conf
+
+          echo "Retrieving controller public IP and port..."
+          until [[ -n "${CONTROLLER_IP}" ]]; do
+            CONTROLLER_IP=$(kubectl get svc controller -o jsonpath={.status.loadBalancer.ingress[0].ip})
+            sleep 2
+          done
+          CTRL_IP_PORT=$(kubectl get svc controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}')
+          echo -n "${CTRL_IP_PORT}" > /conf/controller.conf
+
+          cp -H /secrets/agents.conf /conf
+          cp -H /secrets/id_ecdsa /conf
+
+          # Insert newline at the end of /conf/agents.conf in case there is none
+          [[ ! $(tail -c1 /conf/agents.conf | wc -l) -gt 0 ]] && echo >> /conf/agents.conf
+      volumeMounts:
+        - name: config-volume
+          mountPath: /conf
+          readOnly: false
+        - name: secrets-volume
+          mountPath: /secrets
+          readOnly: true
+  containers:
+    - name: test-runner
+      image: iofog/test-runner-develop:latest
+      volumeMounts:
+      - name: config-volume
+        mountPath: /conf
+        readOnly: true
+  volumes:
+    - name: config-volume
+      emptyDir: {}
+    - name: secrets-volume
+      projected:
+        sources:
+          - secret:
+              name: {{ .Values.test.credentials }}
+              items:
+              - key: privateKey
+                path: id_ecdsa
+              - key: URI
+                path: agents.conf
+
+  restartPolicy: Never
+{{ end }}
