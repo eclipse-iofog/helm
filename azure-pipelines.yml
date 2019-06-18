@@ -1,7 +1,12 @@
 trigger:
-  - ci-unify-helm
+  - master
+  - develop
 pr:
   - master
+  - develop
+
+# Setup Kubernetes service connection for Azure pipelines:
+# https://cloud.google.com/solutions/creating-cicd-pipeline-vsts-kubernetes-engine#setting_up_the_development_and_production_environments
 
 jobs:
   - job: Helm
@@ -73,52 +78,6 @@ jobs:
           arguments: all
           namespace: $(kubernetesNamespace)
           outputFormat: yaml
-      
-      - task: Kubernetes@1
-        displayName: 'Get controller public IP and port'
-        inputs:
-          connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
-          command: get
-          namespace: $(kubernetesNamespace)
-          arguments: svc controller
-          outputFormat: jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}'
-
-      - bash: |
-          env
-          echo "KUBERNETES3_KUBECTLOUTPUT: ${KUBERNETES3_KUBECTLOUTPUT}"
-          echo '##vso[task.setvariable variable=CONTROLLER_PUBLIC_IP_PORT]${KUBERNETES3_KUBECTLOUTPUT}'
-      
-      - task: Go@0
-        displayName: 'Download iofogctl'
-        inputs:
-          command: get
-          arguments: -u -v github.com/eclipse-iofog/iofogctl/cmd/iofogctl
-
-      - bash: ~/go/bin/iofogctl --help
-        displayName: Check iofogctl'
-
-      - bash: |
-          echo iofogctl connect "$(kubernetesNamespace)-controller" -o "${CONTROLLER_PUBLIC_IP_PORT}"" -e "user@domain.com"  -p '#Bugs4Fun' -n "$(kubernetesNamespace)"
-          ~/go/bin/iofogctl connect "$(kubernetesNamespace)-controller" -o "${CONTROLLER_PUBLIC_IP_PORT}"" -e "user@domain.com"  -p '#Bugs4Fun' -n "$(kubernetesNamespace)"
-        displayName: Connect controller to iofogctl'
-
-      - task: DownloadSecureFile@1
-        inputs:
-          secureFile: lkrcal-agent1key
-
-      - bash: |
-          env
-          echo "DOWNLOADSECUREFILE_SECUREFILEPATH: ${DOWNLOADSECUREFILE_SECUREFILEPATH}"
-          ls -l "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
-
-      - bash: |
-          echo iofogctl deploy agent -n "$(kubernetesNamespace)" agent-test --user $(testAgentUsername) --host $(testAgentIp) --key-file "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
-          ~/go/bin/iofogctl iofogctl deploy agent -n "$(kubernetesNamespace)" agent-test --user $(testAgentUsername) --host $(testAgentIp) --key-file "${DOWNLOADSECUREFILE_SECUREFILEPATH}"
-        displayName: Connect controller to iofogctl'
-
-      - bash: cat ~/.iofog.yaml
-        displayName: 'Print configuration of iofogctl'
 
       - task: HelmDeploy@0
         displayName: 'Helm delete'
@@ -154,28 +113,3 @@ jobs:
         inputs:
           artifactName: 'iofog-helm-chart'
           targetPath: $(Build.ArtifactStagingDirectory)/$(ARCHIVE_BASENAME)
-
-#        TODO:
-#        - Initialize agent
-#        - Run test-runner
-#        - Report test results
-#        - Uninstall --purge helm (always)
-#        - Collect all logs (always)
-#        - Push release (only if on master)
-#        - script: |
-#            git config --global user.email "info@edgeworx.io"
-#            git config --global user.name "Azure DevOps"
-#            ./script/bootstrap.bash
-#            ./script/push.bash 0.0.1 $(git.token)
-#          displayName: 'Build and push'
-#
-#        - task: DockerInstaller@0
-#          displayName: Docker Installer
-#          inputs:
-#            dockerVersion: 18.09.2
-#            releaseType: stable
-#
-#        - script: |
-#            echo $(gcp.svcacc) | docker login -u _json_key --password-stdin https://gcr.io
-#          displayName: 'Docker connect to Registry'
-
