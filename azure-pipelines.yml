@@ -1,24 +1,115 @@
 trigger:
-  branches:
-    include:
-      - master
-
+  - master
+  - develop
 pr:
   - master
+  - develop
 
-variables:
-  commit: $(Build.SourceVersion)
-  branch: $(Build.SourceBranch)
+# Setup Kubernetes service connection for Azure pipelines:
+# https://cloud.google.com/solutions/creating-cicd-pipeline-vsts-kubernetes-engine#setting_up_the_development_and_production_environments
 
 jobs:
   - job: Helm
+    variables:
+      - group: pipelines
+      - name: commit
+        value: $(Build.SourceVersion)
+      - name: branch
+        value: $(Build.SourceBranch)
+      - name: kubernetesNamespace
+        value: 'iofog-helm-ci-$(Build.BuildId)'
+      - name: helmReleaseName
+        value: 'iofog-helm-ci-$(Build.BuildId)'
+
     pool:
       vmImage: 'Ubuntu-16.04'
 
-    steps: 
-      - script: |
-          git config --global user.email "info@edgeworx.io"
-          git config --global user.name "Azure DevOps"
-          ./script/bootstrap.bash
-          ./script/push.bash 0.0.1 $(git.token)
-        displayName: 'Build and push'
+    steps:
+      - task: HelmDeploy@0
+        displayName: 'Helm init'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          namespace: $(kubernetesNamespace)
+          command: init
+          upgradetiller: false
+          waitForExecution: true
+          arguments: --client-only
+
+      - task: Kubernetes@1
+        displayName: 'Check custom resource definition exists'
+        continueOnError: true
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: get
+          arguments: crd iofogs.k8s.iofog.org
+          outputFormat: jsonpath='{.metadata.uid}'
+
+      - bash: |
+          env
+          echo "KUBERNETES1_KUBECTLOUTPUT: ${KUBERNETES1_KUBECTLOUTPUT}"
+          if [[ -z "${KUBERNETES1_KUBECTLOUTPUT}" ]]; then
+            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]true'
+          else
+            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]false'
+          fi
+
+      - task: HelmDeploy@0
+        displayName: 'Helm install ioFog'
+        timeoutInMinutes: 10
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          namespace: $(kubernetesNamespace)
+          command: install
+          arguments: --set createCustomResource=$(CREATE_CUSTOM_RESOURCE)
+          chartType: FilePath
+          chartPath: iofog
+          releaseName: $(helmReleaseName)
+
+      - task: Kubernetes@1
+        displayName: 'Print all resources created'
+        condition: always()
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: get
+          arguments: all
+          namespace: $(kubernetesNamespace)
+          outputFormat: yaml
+
+      - task: HelmDeploy@0
+        displayName: 'Helm delete'
+        condition: always()
+        continueOnError: true
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: delete
+          arguments: '--purge $(helmReleaseName)'
+
+      - task: Kubernetes@1
+        displayName: 'Delete Kubernetes namespace'
+        condition: always()
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: delete
+          arguments: ns $(kubernetesNamespace)
+
+      - task: HelmDeploy@0
+        displayName: Helm package
+        inputs:
+          command: package
+          chartPath: iofog
+          destination: $(Build.ArtifactStagingDirectory)
+
+      - bash: |
+          ARCHIVE_BASENAME=$(basename $(find $(Build.ArtifactStagingDirectory) -name '*.tgz' | head -n1))
+          echo "##vso[task.setvariable variable=ARCHIVE_BASENAME]${ARCHIVE_BASENAME}"
+      
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'iofog-helm-chart'
+          targetPath: $(Build.ArtifactStagingDirectory)/$(ARCHIVE_BASENAME)

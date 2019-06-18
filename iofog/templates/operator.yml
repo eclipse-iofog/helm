@@ -2,14 +2,14 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: operator
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
   name: operator
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 rules:
   - apiGroups:
       - ""
@@ -56,7 +56,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: operator
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 subjects:
   - kind: ServiceAccount
     name: operator
@@ -65,31 +65,11 @@ roleRef:
   name: operator
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: iofogs.k8s.iofog.org
-spec:
-  group: k8s.iofog.org
-  names:
-    kind: IOFog
-    listKind: IOFogList
-    plural: iofogs
-    singular: iofog
-  scope: Namespaced
-  version: v1alpha1
-  subresources:
-    status: {}
-    scale:
-      specReplicasPath: .spec.replicas
-      statusReplicasPath: .status.replicas
-      labelSelectorPath: .status.labelSelector
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: operator
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 spec:
   replicas: {{ .Values.operator.replicas }}
   selector:

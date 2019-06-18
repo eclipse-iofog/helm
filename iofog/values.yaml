@@ -1,9 +1,12 @@
-namespace: iofog
+defaultNamespace: "iofog"
+
+createCustomResource: true
 
 controller:
   replicas: 1
-  image: "edgeworx/controller-k8s:latest"
+  image: "iofog/controller-develop:latest"
   imagePullPolicy: Always
+  host: controller
   port: 51121
   loadBalancerIP: ""
 
@@ -12,3 +15,24 @@ connector:
   image: "iofog/connector:dev"
   imagePullPolicy: Always
   port: 8080
+
+scheduler:
+  replicas: 1
+  image: "iofog/iofog-scheduler:develop"
+  imagePullPolicy: Always
+
+operator:
+  replicas: 1
+  image: "iofog/iofog-operator:develop"
+  imagePullPolicy: Always
+  port: 60000
+
+kubelet:
+  replicas: 1
+  image: "iofog/iofog-kubelet:develop"
+  imagePullPolicy: Always
+  apiServerHost: kubernetes.default.svc
+  apiServerPort: 443
+
+test:
+  credentials: ""

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: connector
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: connector
 spec:
@@ -15,6 +15,19 @@ spec:
       labels:
         name: connector
     spec:
+      initContainers:
+        - name: wait-for-controller
+          image: fmiguelez/alpine-curl-jq:latest
+          env:
+            - name: CONTROLLER_URL
+              value: "http://{{ .Values.controller.host }}:{{ .Values.controller.port }}/api/v3"
+          command: ['sh', '-c']
+          args:
+          - |
+            until [[ "$(curl ${CONTROLLER_URL}/status 2>/dev/null | jq -r ".status")" == "online" ]]; do
+              echo "Waiting for Controller at ${CONTROLLER_URL}..."
+              sleep 2
+            done
       containers:
       - name: connector
         image: {{ .Values.connector.image }}
@@ -24,7 +37,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: connector
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
   labels:
     name: connector
 spec:
