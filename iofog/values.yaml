@@ -4,7 +4,7 @@ createCustomResource: true
 
 controller:
   replicas: 1
-  image: "iofog/controller-develop:latest"
+  image: "baghbidi/public:new-cont"
   imagePullPolicy: Always
   host: controller
   port: 51121
@@ -12,24 +12,19 @@ controller:
 
 connector:
   replicas: 1
-  image: "iofog/connector:dev"
+  image: "gcr.io/focal-freedom-236620/connector:1.0.4"
   imagePullPolicy: Always
   port: 8080
 
-scheduler:
-  replicas: 1
-  image: "iofog/iofog-scheduler:develop"
-  imagePullPolicy: Always
-
 operator:
   replicas: 1
-  image: "iofog/iofog-operator:develop"
+  image: "gcr.io/focal-freedom-236620/operator:rc-1.0.0"
   imagePullPolicy: Always
   port: 60000
 
 kubelet:
   replicas: 1
-  image: "iofog/iofog-kubelet:develop"
+  image: "gcr.io/focal-freedom-236620/kubelet:rc-1.0.0"
   imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443
