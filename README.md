@@ -10,7 +10,31 @@ The following commands require an installation of `Helm` and `kubectl` executing
 * [Helm installation instructions](https://helm.sh/docs/using_helm/#installing-helm)
 * [kubectl installation instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-Note that on GKE, it is necessary to create a service account for Tiller before initializing helm. See [helm init instructions](https://helm.sh/docs/using_helm/#tiller-and-role-based-access-control) for more details.
+
+## Create Service Account for Tiller
+
+Note that on RBAC enabled Kubernetes clusters (e.g. GKE, AKE), it is necessary to create a service account for Tiller before initializing helm. See [helm init instructions](https://helm.sh/docs/using_helm/#tiller-and-role-based-access-control) for more details.
+
+Create service account for Tiller and bind cluster-admin role.
+
+```bash
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --serviceaccount=kube-system:tiller\n
+```
+
+## Initialize Helm And Install Tiller
+
+You can now use your service account to initialize Helm.
+
+```bash
+helm init --service-account tiller --wait\n
+```
+
+Note that for AKE, you will also need to specify node selectors for Tiller.
+
+```bash
+helm init --service-account tiller --node-selectors "beta.kubernetes.io/os"="linux"
+```
 
 # Usage
 
@@ -55,14 +79,36 @@ kubectl delete crd iofogs.k8s.iofog.org
 
 ## Testing ioFog Stack With Agent
 
-### Credentials For ioFog Agent
+This is a short guide how to run [ioFog smoke tests](https://github.com/eclipse-iofog/test-runner) on your ioFog installation. These tests require one ioFog Agent to be provisioned as well as SSH access to the Agent. 
 
-In order to test the ioFog stack, we will need access to a single ioFog agent. Note that this agent is external to the Kubernetes cluster, but its credentials need to be stored as a secret in the cluster.
+### Register Agent With The ioFog Stack
 
-You need to create such secret manually, in the same namespace the Helm chart was deployed. This secret only needs to be created or updated when you want to use a different agent for testing purposes. It is not required in any way if you don't need to test the ioFog stack.
+Now is the time to register the agent with the rest of the ioFog stack. For this purpose, use [iofogctl](https://github.com/eclipse-iofog/iofogctl).
+
+First, connect iofogctl to the Controller deployed by Helm. 
 
 ```bash
-kubectl -n iofog create secret generic agent --from-file=privateKey=/home/username/.ssh/agent-key --from-literal=URI=username@34.66.151.77
+iofogctl connect -n iofog iofog-test-controller \
+  -o $(kubectl -n iofog get svc controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}') \
+  -e user@domain.com  -p '#Bugs4Fun' 
+```
+
+Then, you need to provision an ioFog Agent to the Controller you just connected to. Here, `my-first-agent` is the agent name, `1.2.3.4` is the external IP that iofogctl can access, and `/home/username/.ssh/agent-key` is the key that needs to be authorized on the agent. Working SSH access to the agent is required in order to provision the agent.
+
+```bash
+iofogctl deploy agent -n iofog-test my-first-agent --user username --host 1.2.3.4 --key-file /home/username/.ssh/agent-key
+```
+
+### Credentials For ioFog Agent Tests
+
+In order to test the ioFog stack, you will need access to a single ioFog agent. Note that this agent is external to the Kubernetes cluster, but its credentials need to be stored as a secret in the cluster.
+
+You need to create such secret manually, in the same namespace the Helm chart was deployed. This secret only needs to be created or updated when you want to use a different agent for testing purposes. It is not required in any way if you don't need to test the ioFog stack. Here, `1.2.3.4` is the external IP that iofogctl can access, and `/home/username/.ssh/agent-key` is the key that needs to be authorized on the agent.
+
+Note that the arguments for the secret are the same as the credentials you provided for agent deployment.
+
+```bash
+kubectl -n iofog create secret generic agent --from-file=privateKey=/home/username/.ssh/agent-key --from-literal=URI=username@1.2.3.4
 ```
 
 The credentials are used by the test runner. You can test them by running `ssh -i /home/username/.ssh/agent-key username@34.66.151.77`. It is also possible to check the secret:
@@ -76,20 +122,6 @@ When the secret and the agent are available, upgrade your Helm release to refere
 ```bash
 helm upgrade iofog --namespace iofog --set createCustomResource=false --set test.credentials=agent-credentials iofog/iofog
 ```
-
-### Register Agent With The ioFog Stack
-
-Now is the time to register the agent with the rest of the ioFog stack. For this purpose, use [iofogctl](https://github.com/eclipse-iofog/iofogctl).
-
-```bash
-iofogctl connect -n iofog iofog-test-controller \
-  -o $(kubectl -n iofog get svc controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}') \
-  -e user@domain.com  -p '#Bugs4Fun' 
-
-iofogctl deploy agent -n iofog-test agent1 --user username --host 34.66.151.77 --key-file /home/username/.ssh/agent-key
-```
-
-Note that the arguments for agent deployment are the same as the credentials we provided to the secret.
 
 ### Run Tests
 
