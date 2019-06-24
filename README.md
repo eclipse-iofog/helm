@@ -18,8 +18,14 @@ Note that on RBAC enabled Kubernetes clusters (e.g. GKE, AKE), it is necessary t
 Create service account for Tiller and bind cluster-admin role.
 
 ```bash
-kubectl create serviceaccount --namespace kube-system tiller
-kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --serviceaccount=kube-system:tiller\n
+kubectl create serviceaccount --namespace kube-system tiller-svacc
+kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --serviceaccount=kube-system:tiller-svacc
+```
+
+In order to create the cluster role binding on GKE, you need to have `cluster.admin` permission.
+
+```bash
+gcloud projects add-iam-policy-binding $PROJECT --member=user:person@company.com --role=roles/container.admin
 ```
 
 ## Initialize Helm And Install Tiller
@@ -27,13 +33,13 @@ kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --servi
 You can now use your service account to initialize Helm.
 
 ```bash
-helm init --service-account tiller --wait\n
+helm init --service-account tiller-svacc --wait
 ```
 
 Note that for AKE, you will also need to specify node selectors for Tiller.
 
 ```bash
-helm init --service-account tiller --node-selectors "beta.kubernetes.io/os"="linux"
+helm init --service-account tiller-svacc --node-selectors "beta.kubernetes.io/os"="linux" --wait
 ```
 
 # Usage
@@ -77,11 +83,7 @@ kubectl delete crd iofogs.k8s.iofog.org
 ```
 
 
-## Testing ioFog Stack With Agent
-
-This is a short guide how to run [ioFog smoke tests](https://github.com/eclipse-iofog/test-runner) on your ioFog installation. These tests require one ioFog Agent to be provisioned as well as SSH access to the Agent. 
-
-### Register Agent With The ioFog Stack
+## Register Agent With The ioFog Stack
 
 Now is the time to register the agent with the rest of the ioFog stack. For this purpose, use [iofogctl](https://github.com/eclipse-iofog/iofogctl).
 
@@ -98,6 +100,11 @@ Then, you need to provision an ioFog Agent to the Controller you just connected 
 ```bash
 iofogctl deploy agent -n iofog-test my-first-agent --user username --host 1.2.3.4 --key-file /home/username/.ssh/agent-key
 ```
+
+
+## Testing ioFog Stack With Agent
+
+This is a short guide how to run [ioFog smoke tests](https://github.com/eclipse-iofog/test-runner) on your ioFog installation. These tests require one ioFog Agent to be provisioned as well as SSH access to the Agent.
 
 ### Credentials For ioFog Agent Tests
 
