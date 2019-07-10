@@ -4,7 +4,7 @@ createCustomResource: true
 
 controller:
   replicas: 1
-  image: "baghbidi/public:new-cont"
+  image: "gcr.io/focal-freedom-236620/controller:develop"
   imagePullPolicy: Always
   host: controller
   port: 51121
@@ -12,19 +12,19 @@ controller:
 
 connector:
   replicas: 1
-  image: "gcr.io/focal-freedom-236620/connector:1.0.4"
+  image: "gcr.io/focal-freedom-236620/connector:develop"
   imagePullPolicy: Always
   port: 8080
 
 operator:
   replicas: 1
-  image: "gcr.io/focal-freedom-236620/operator:rc-1.0.0"
+  image: "gcr.io/focal-freedom-236620/operator:develop"
   imagePullPolicy: Always
   port: 60000
 
 kubelet:
   replicas: 1
-  image: "gcr.io/focal-freedom-236620/kubelet:rc-1.0.0"
+  image: "gcr.io/focal-freedom-236620/kubelet:develop"
   imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443
