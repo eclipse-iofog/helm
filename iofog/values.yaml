@@ -28,6 +28,3 @@ kubelet:
   imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443
-
-test:
-  credentials: ""
