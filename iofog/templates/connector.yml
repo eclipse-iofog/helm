@@ -46,5 +46,12 @@ spec:
     - port: {{ .Values.connector.port }}
       targetPort: {{ .Values.connector.port }}
       protocol: TCP
+      name: connector
+{{range $i, $e := untilStep 6000 6051 1}}
+    - port: {{$e}}
+      targetPort: {{$e}}
+      protocol: TCP
+      name: connector{{$i}}
+{{end}}
   selector:
     name: connector
