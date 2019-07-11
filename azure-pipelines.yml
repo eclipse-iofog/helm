@@ -85,7 +85,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
           command: test
-          releaseName: $(helmReleaseName)
+          arguments: $(helmReleaseName)
 
       - task: Kubernetes@1
         displayName: 'Print test results'
