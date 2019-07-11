@@ -80,6 +80,25 @@ jobs:
           outputFormat: yaml
 
       - task: HelmDeploy@0
+        displayName: 'Helm test'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: test
+          releaseName: $(helmReleaseName)
+
+      - task: Kubernetes@1
+        displayName: 'Print test results'
+        condition: always()
+        continueOnError: true
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          command: logs
+          arguments: test-runner
+          namespace: $(kubernetesNamespace)
+
+      - task: HelmDeploy@0
         displayName: 'Helm delete'
         condition: always()
         continueOnError: true
