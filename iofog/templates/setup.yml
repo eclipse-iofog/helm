@@ -35,8 +35,13 @@ spec:
                 --header 'Content-Type: application/json' \
                 --data '{"email":"user@domain.com","firstName":"John","lastName":"Doe","password":"#Bugs4Fun"}' \
                 2>/dev/null)
-            RET_MSG=$(echo $RET | jq -r '.message')
             RET_UID=$(echo $RET | jq -r '.userId')
-            [[ "${RET_MSG}" == "null" ]] && echo "${RET_UID}" || echo "${RET_MSG}"
+            if [[ "${RET_UID}" != "null" ]]; then
+              echo "${RET_UID}"
+            else
+              echo "Error!"
+              echo "${RET}"
+              exit 1
+            fi
       restartPolicy: Never
   backoffLimit: 1
