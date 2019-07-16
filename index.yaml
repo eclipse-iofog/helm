@@ -3,11 +3,11 @@ entries:
   iofog:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2019-06-18T21:32:35.392606597Z"
+    created: "2019-07-16T11:23:00.46947817Z"
     description: A Helm chart for ioFog services
     digest: 92bf52bd77594e09bd42fe4c11e8006eb3dd2350330c605261c9614e0bcf6c62
     name: iofog
     urls:
     - https://eclipse-iofog.github.io/helm/iofog-0.2.0.tgz
     version: 0.2.0
-generated: "2019-06-18T21:32:35.391704685Z"
+generated: "2019-07-16T11:23:00.46906497Z"
