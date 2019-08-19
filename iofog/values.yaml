@@ -1,6 +1,6 @@
 defaultNamespace: "iofog"
 
-createCustomResource: false
+createCustomResource: true
 
 controller:
   replicas: 1
