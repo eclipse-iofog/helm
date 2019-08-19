@@ -41,9 +41,9 @@ spec:
     metadata:
       labels:
         name: kubelet
-      {{- if .Values.connector.podAnnotations }}
+      {{- if .Values.kubelet.podAnnotations }}
       annotations:
-      {{- range $key, $value := .Values.connector.podAnnotations }}
+      {{- range $key, $value := .Values.kubelet.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
       {{- end }}
