@@ -43,6 +43,12 @@ spec:
     metadata:
       labels:
         name: controller
+      {{- if .Values.controller.podAnnotations }}
+      annotations:
+      {{- range $key, $value := .Values.controller.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
     spec:
       serviceAccountName: svacc-iofog-controller
       volumes:

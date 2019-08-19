@@ -1,6 +1,6 @@
 defaultNamespace: "iofog"
 
-createCustomResource: true
+createCustomResource: false
 
 controller:
   replicas: 1
@@ -9,18 +9,24 @@ controller:
   host: controller
   port: 51121
   loadBalancerIP: ""
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 connector:
   replicas: 1
   image: "iofog/connector:1.2.0"
   imagePullPolicy: Always
   port: 8080
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 operator:
   replicas: 1
   image: "iofog/iofog-operator:1.2.0"
   imagePullPolicy: Always
   port: 60000
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 kubelet:
   replicas: 1
@@ -28,6 +34,8 @@ kubelet:
   imagePullPolicy: Always
   apiServerHost: kubernetes.default.svc
   apiServerPort: 443
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 tests:
   image: "iofog/test-runner:1.2.0"

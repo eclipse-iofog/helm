@@ -14,6 +14,12 @@ spec:
     metadata:
       labels:
         name: connector
+      {{- if .Values.connector.podAnnotations }}
+      annotations:
+      {{- range $key, $value := .Values.connector.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
     spec:
       initContainers:
         - name: wait-for-controller

@@ -41,6 +41,12 @@ spec:
     metadata:
       labels:
         name: kubelet
+      {{- if .Values.connector.podAnnotations }}
+      annotations:
+      {{- range $key, $value := .Values.connector.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
     spec:
       serviceAccountName: svacc-iofog-kubelet
       volumes:
