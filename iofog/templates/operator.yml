@@ -1,91 +1,43 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: operator
+  name: iofog-operator
   namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 ---
+kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
 metadata:
-  creationTimestamp: null
-  name: operator
-  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - services
-      - endpoints
-      - persistentvolumeclaims
-      - events
-      - configmaps
-      - secrets
-    verbs:
-      - '*'
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-    verbs:
-      - get
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - daemonsets
-      - replicasets
-      - statefulsets
-    verbs:
-      - '*'
-  - apiGroups:
-      - monitoring.coreos.com
-    resources:
-      - servicemonitors
-    verbs:
-      - get
-      - create
-  - apiGroups:
-      - k8s.iofog.org
-    resources:
-      - '*'
-    verbs:
-      - '*'
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: operator
-  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+  name: iofog-operator
 subjects:
   - kind: ServiceAccount
-    name: operator
+    name: iofog-operator
+    namespace: default
 roleRef:
-  kind: Role
-  name: operator
+  kind: ClusterRole
+  name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: operator
+  name: iofog-operator
   namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 spec:
   replicas: {{ .Values.operator.replicas }}
   selector:
     matchLabels:
-      name: operator
+      name: iofog-operator
   template:
     metadata:
       labels:
-        name: operator
+        name: iofog-operator
     spec:
-      serviceAccountName: operator
+      serviceAccountName: iofog-operator
       containers:
-        - name: operator
+        - name: iofog-operator
           image: {{ .Values.operator.image }}
           ports:
-            - containerPort: {{ .Values.operator.port }}
+            - containerPort: 60000
               name: metrics
           command:
             - iofog-operator

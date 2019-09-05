@@ -1,34 +1,36 @@
-defaultNamespace: "iofog"
+defaultNamespace: "default"
 
 createCustomResource: true
 
-controller:
-  replicas: 1
-  image: "iofog/controller:1.2.0"
-  imagePullPolicy: Always
-  host: controller
-  port: 51121
-  loadBalancerIP: ""
+controlPlane:
+  user:
+    firstName: "First"
+    surname: "Second"
+    email: "user@domain.com"
+    password: "H23fkidf9hoibf2nlk"
+  database:
+    provider: ""
+    host: ""
+    port: 0
+    password: ""
+    dbName: ""
+  controller:
+    replicas: 1
+    image: "iofog/controller:1.3.0"
+    imagePullPolicy: Always
+  kubeletImage: "iofog/iofog-kubelet:1.3.0"
 
-connector:
-  replicas: 1
-  image: "iofog/connector:1.2.0"
-  imagePullPolicy: Always
-  port: 8080
+connectors:
+  image: "iofog/connector:1.3.0"
+  instanceNames:
+    - "first"
+    - "second"
 
 operator:
   replicas: 1
-  image: "iofog/iofog-operator:1.2.0"
+  image: "iofog/iofog-operator:1.3.0"
   imagePullPolicy: Always
-  port: 60000
-
-kubelet:
-  replicas: 1
-  image: "iofog/iofog-kubelet:1.2.0"
-  imagePullPolicy: Always
-  apiServerHost: kubernetes.default.svc
-  apiServerPort: 443
 
 tests:
-  image: "iofog/test-runner:1.2.0"
+  image: "iofog/test-runner:1.3.0"
   imagePullPolicy: Always
