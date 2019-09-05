@@ -16,17 +16,17 @@ controlPlane:
     dbName: ""
   controller:
     replicas: 1
-    image: "gcr.io/focal-freedom-236620/controller:develop"
+    image: "iofog/controller:1.3.0"
     imagePullPolicy: Always
-  kubeletImage: "gcr.io/focal-freedom-236620/kubelet:develop"
+  kubeletImage: "iofog/iofog-kubelet:1.3.0"
 
 connectors:
-  image: "gcr.io/focal-freedom-236620/connector:develop"
+  image: "iofog/connector:1.3.0"
   instanceNames:
     - "first"
     - "second"
 
 operator:
   replicas: 1
-  image: "gcr.io/focal-freedom-236620/operator:develop"
+  image: "iofog/iofog-operator:1.3.0"
   imagePullPolicy: Always
