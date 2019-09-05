@@ -55,13 +55,17 @@ helm install --name iofog --namespace iofog iofog/iofog
 
 ### Multiple Instances of ioFog Stack
 
-If you want to have multiple instances of ioFog on the same Kubernetes cluster, it is necessary to tell Helm not to install custom resource definitions. This can be done by overriding the `createCustomResource` (default: `true`) variable.
- Only use this option when the ioFog custom resource exists, either from another Helm installation or manual installation using [iofogctl](https://github.com/eclipse-iofog/iofogctl).
+Certain resource created by this Chart are cluster-scoped (rather than namespaces-scoped) Therefore, if you want to have multiple instances of ioFog on the same Kubernetes cluster, you must not redeploy the same cluster-scoped resources. This can be done by overriding the `createCustomResources` (default: `true`) variable.
+ Only use this option when the ioFog cluster-scoped resource exists, either from another Helm installation or manual installation using [iofogctl](https://github.com/eclipse-iofog/iofogctl). These resources include two Custom Resource Definitions and a Cluster Role Binding.
 
-To check if the custom resource exists, run `kubectl get crd iofogs.k8s.iofog.org`. If the resource exists, you must use `createCustomResource=false` so that Helm does not try to create it again. 
+To check if the cluster-scoped resources exist, you can use the following commands:
+```bash
+kubectl get crds | grep iofog
+```
+If the resources exist, you must use `createCustomResources=false` so that Helm does not try to create them again. 
 
 ```bash
-helm install --name iofog --namespace iofog --set createCustomResource=false iofog/iofog
+helm install --name iofog --namespace iofog --set createCustomResources=false iofog/iofog
 ```
 
 ## Uninstall ioFog Stack
@@ -72,18 +76,8 @@ To uninstall ioFog stack, simply delete the Helm release, where the release name
 helm delete --purge iofog
 ```
 
-Note that due to Helm's handing of custom resource definitions, all such definitions are orphaned when a release is created and thus need to be deleted manually.
+Note that due to Helm's handing of Custom Resource Definitions, all CRDs are orphaned when a release is created and thus need to be deleted manually.
 
 ```bash
-kubectl delete crd iofogs.k8s.iofog.org 
+kubectl get crds | grep iofog | awk '{print $1}' | xargs kubectl delete crds
 ```
-
-## Run Tests
-
-You can run simple test suite on your newly deployed ioFog stack using helm:
-
-```bash
-helm test iofog
-```
-
-To see a detailed output from the tests, you cna check test-runner logs using `kubectl -n iofog logs test-runner`. In case you do not want to inspect the logs, using `helm test --cleanup iofog` will remove all test pods after running the tests. 

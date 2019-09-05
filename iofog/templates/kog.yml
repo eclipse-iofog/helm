@@ -1,0 +1,28 @@
+apiVersion: k8s.iofog.org/v1alpha2
+kind: Kog
+metadata:
+  name: iokog
+spec:
+  controlPlane:
+    iofogUser:
+      name: {{ .Values.controlPlane.user.firstName }}
+      surname: {{ .Values.controlPlane.user.surname }}
+      email: {{ .Values.controlPlane.user.email }}
+      password: {{ .Values.controlPlane.user.password }}
+    database:
+      provider: {{ .Values.controlPlane.database.provider }}
+      host: {{ .Values.controlPlane.database.host }}
+      port: {{ .Values.controlPlane.database.port }}
+      user: {{ .Values.controlPlane.database.user }}
+      password: {{ .Values.controlPlane.database.password }}
+      databaseName: {{ .Values.controlPlane.database.dbName }}
+    controllerReplicaCount: {{ .Values.controlPlane.controller.replicas }}
+    controllerImage: {{ .Values.controlPlane.controller.image }}
+    kubeletImage: {{ .Values.controlPlane.kubeletImage }}
+  connectors:
+    image: {{ .Values.connectors.image }}
+    instances:
+      {{- range .Values.connectors.instanceNames }}
+        - name: {{ . }}
+      {{- end }}
+
