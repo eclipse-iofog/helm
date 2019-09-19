@@ -32,9 +32,9 @@ jobs:
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: init
-          upgradetiller: false
+          upgradetiller: true
           waitForExecution: true
-          arguments: --client-only
+          arguments: --service-account $(tillerServiceAccount)
 
       - task: Kubernetes@1
         displayName: 'Check custom resource definition exists'
