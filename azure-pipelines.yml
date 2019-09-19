@@ -29,7 +29,7 @@ jobs:
         displayName: 'Helm init'
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: init
           upgradetiller: false
@@ -41,7 +41,7 @@ jobs:
         continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: get
           arguments: crd iofogs.k8s.iofog.org
           outputFormat: jsonpath='{.metadata.uid}'
@@ -60,7 +60,7 @@ jobs:
         timeoutInMinutes: 10
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: install
           arguments: --set createCustomResources=$(CREATE_CUSTOM_RESOURCE)
@@ -73,7 +73,7 @@ jobs:
         condition: always()
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: get
           arguments: all
           namespace: $(kubernetesNamespace)
@@ -83,7 +83,7 @@ jobs:
         displayName: 'Helm test'
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: test
           arguments: $(helmReleaseName)
 
@@ -93,7 +93,7 @@ jobs:
         continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: logs
           arguments: test-runner
           namespace: $(kubernetesNamespace)
@@ -104,7 +104,7 @@ jobs:
         continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
           arguments: '--purge $(helmReleaseName)'
 
@@ -113,7 +113,7 @@ jobs:
         condition: always()
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
           arguments: ns $(kubernetesNamespace)
 
