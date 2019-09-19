@@ -63,7 +63,7 @@ jobs:
           kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
           namespace: $(kubernetesNamespace)
           command: install
-          arguments: --set createCustomResource=$(CREATE_CUSTOM_RESOURCE)
+          arguments: --set createCustomResources=$(CREATE_CUSTOM_RESOURCE)
           chartType: FilePath
           chartPath: iofog
           releaseName: $(helmReleaseName)
