@@ -89,8 +89,6 @@ jobs:
 
       - task: Kubernetes@1
         displayName: 'Print test results'
-        condition: always()
-        continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
