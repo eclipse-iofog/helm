@@ -69,6 +69,15 @@ jobs:
           releaseName: $(helmReleaseName)
 
       - task: Kubernetes@1
+        displayName: 'Wait for Operator to setup ECN'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
+          command: wait
+          arguments: --for=condition=available deployment.apps/controller --timeout 120s
+          namespace: $(kubernetesNamespace)
+
+      - task: Kubernetes@1
         displayName: 'Print all resources created'
         condition: always()
         inputs:
