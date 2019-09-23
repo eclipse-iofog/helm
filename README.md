@@ -51,9 +51,11 @@ Add this repository to your Helm repository index and install the ioFog stack an
 ```bash
 helm repo add iofog https://eclipse-iofog.github.io/helm
 helm install \
---set controlPlane.user.email=user@domain.com, controlPlane.user.password=any123password345 \
+--set controlPlane.user.email=user@domain.com,controlPlane.user.password=any123password345 \
 --name iofog \
---namespace iofog iofog/iofog
+--version 1.3.0-rc1 \
+--namespace iofog \
+iofog/iofog
 ```
 
 Once the installation is complete, you will be able to connect to the ioFog Controller on K8s using [iofogctl](https://iofog.org/docs/1.3.0/tools/iofogctl/usage.html).
