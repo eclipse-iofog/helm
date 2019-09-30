@@ -16,17 +16,21 @@ controlPlane:
     dbName: ""
   controller:
     replicas: 1
-    image: "iofog/controller:1.3.0-rc1"
+    image: "iofog/controller:1.3.0-beta"
     imagePullPolicy: Always
-  kubeletImage: "iofog/iofog-kubelet:1.3.0-rc1"
+  kubeletImage: "iofog/iofog-kubelet:1.3.0-beta"
+  loadBalancerIP: ""
+  serviceType: "LoadBalancer"
+
 
 connectors:
-  image: "iofog/connector:1.3.0-rc1"
+  image: "iofog/connector:1.3.0-beta"
+  serviceType: "LoadBalancer"
   instanceNames:
     - "first"
     - "second"
 
 operator:
   replicas: 1
-  image: "iofog/iofog-operator:1.3.0-rc1"
+  image: "iofog/iofog-operator:1.3.0-beta"
   imagePullPolicy: Always

@@ -53,7 +53,7 @@ helm repo add iofog https://eclipse-iofog.github.io/helm
 helm install \
 --set controlPlane.user.email=user@domain.com,controlPlane.user.password=any123password345 \
 --name iofog \
---version 1.3.0-rc1 \
+--version 1.3.0-beta \
 --namespace iofog \
 iofog/iofog
 ```
