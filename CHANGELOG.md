@@ -1,16 +1,11 @@
 # Changelog
 
-## [v1.3.0-beta] - *unreleased
+## [v1.3.0] - *unreleased
 
 ### Features
 
 * Add chart parameters for specifying service type of Controller and Connector
   * Supported options: `LoadBalancer`, `NodePort` and `ClusterIP`
-
-## [v1.3.0-rc1] - 2019-09-19
-
-### Features
-
 * Use new [ioFog operator](https://github.com/eclipse-iofog/iofog-operator)
 * Add Custom Resource Definition for the new operator 
 
