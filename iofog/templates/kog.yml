@@ -1,4 +1,4 @@
-apiVersion: k8s.iofog.org/v1alpha2
+apiVersion: iofog.org/v1
 kind: Kog
 metadata:
   name: iokog
@@ -23,7 +23,7 @@ spec:
     serviceType: {{ .Values.controlPlane.serviceType }}
   connectors:
     image: {{ .Values.connectors.image }}
-    serviceType: {{ .Values.controlPlane.serviceType }}
+    serviceType: "LoadBalancer"
     instances:
       {{- range .Values.connectors.instanceNames }}
         - name: {{ . }}
