@@ -33,7 +33,7 @@ spec:
   group: iofog.org
   names:
     kind: Application
-    listKind: Application
+    listKind: ApplicationList
     plural: apps
     singular: app
   scope: Namespaced
