@@ -19,6 +19,8 @@ controlPlane:
     image: "gcr.io/focal-freedom-236620/controller:develop"
     imagePullPolicy: Always
   kubeletImage: "gcr.io/focal-freedom-236620/kubelet:develop"
+  loadBalancerIP: ""
+  serviceType: "LoadBalancer"
 
 connectors:
   image: "gcr.io/focal-freedom-236620/connector:develop"

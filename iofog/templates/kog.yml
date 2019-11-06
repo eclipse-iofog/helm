@@ -19,8 +19,11 @@ spec:
     controllerReplicaCount: {{ .Values.controlPlane.controller.replicas }}
     controllerImage: {{ .Values.controlPlane.controller.image }}
     kubeletImage: {{ .Values.controlPlane.kubeletImage }}
+    loadBalancerIP: {{ .Values.controlPlane.loadBalancerIP }}
+    serviceType: {{ .Values.controlPlane.serviceType }}
   connectors:
     image: {{ .Values.connectors.image }}
+    serviceType: "LoadBalancer"
     instances:
       {{- range .Values.connectors.instanceNames }}
         - name: {{ . }}
