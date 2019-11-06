@@ -16,7 +16,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  version: v1
   versions:
   - name: v1
     served: true
@@ -39,7 +38,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  version: v1
   versions:
   - name: v1
     served: true
