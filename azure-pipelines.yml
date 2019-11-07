@@ -1,6 +1,12 @@
 trigger:
-  - master
-  - develop
+  tags:
+    include:
+      - v*
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
 pr:
   - master
   - develop
