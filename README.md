@@ -50,7 +50,7 @@ kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --servi
  helm repo add iofog https://eclipse-iofog.github.io/helm
  ```
  
- We can list all available versions of the ioFog Helm chart using `helm search -l iofog/iofog`.
+ We can list all available versions of the ioFog Helm chart using `helm search -l iofog/iofog`. From Helm 2.16 onwards, only charts with production versions are listed by default. To list all versions, including development versions, use `helm search -l --devel iofog` 
  
  To install a specific version of ioFog, use `helm install`:
  
