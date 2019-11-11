@@ -118,7 +118,7 @@ helm install \
     --set createCustomResources=false \
     --set controlPlane.user.email=user@domain.com \
     --set controlPlane.user.password=any123password345 \
-    --version 1.3.0-rc1 \
+    --version 1.3.0-rc2 \
     --namespace second-ecn \
     --name second-ecn \
     iofog/iofog
