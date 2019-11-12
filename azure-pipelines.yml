@@ -80,7 +80,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: wait
-          arguments: --for=condition=available deployment.apps/controller --timeout 120s
+          arguments: --for=condition=ready pod -l name=controller --timeout 120s
           namespace: $(kubernetesNamespace)
 
       - task: Kubernetes@1
