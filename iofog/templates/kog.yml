@@ -7,7 +7,7 @@ spec:
     iofogUser:
       name: {{ .Values.controlPlane.user.firstName }}
       surname: {{ .Values.controlPlane.user.surname }}
-      email: {{ .Values.controlPlane.user.email | b64enc }}
+      email: {{ .Values.controlPlane.user.email }}
       password: {{ .Values.controlPlane.user.password | b64enc }}
     database:
       provider: {{ .Values.controlPlane.database.provider }}
