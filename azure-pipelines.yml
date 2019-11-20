@@ -1,6 +1,12 @@
 trigger:
-  - master
-  - develop
+  tags:
+    include:
+      - v*
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
 pr:
   - master
   - develop
@@ -29,19 +35,19 @@ jobs:
         displayName: 'Helm init'
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: init
-          upgradetiller: false
+          upgradetiller: true
           waitForExecution: true
-          arguments: --client-only
+          arguments: --service-account $(tillerServiceAccount)
 
       - task: Kubernetes@1
         displayName: 'Check custom resource definition exists'
         continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: get
           arguments: crd iofogs.k8s.iofog.org
           outputFormat: jsonpath='{.metadata.uid}'
@@ -60,20 +66,29 @@ jobs:
         timeoutInMinutes: 10
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: install
-          arguments: --set createCustomResource=$(CREATE_CUSTOM_RESOURCE)
+          arguments: --set createCustomResources=$(CREATE_CUSTOM_RESOURCE)
           chartType: FilePath
           chartPath: iofog
           releaseName: $(helmReleaseName)
+
+      - task: Kubernetes@1
+        displayName: 'Wait for Operator to setup ECN'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
+          command: wait
+          arguments: --for=condition=ready pod -l name=controller --timeout 120s
+          namespace: $(kubernetesNamespace)
 
       - task: Kubernetes@1
         displayName: 'Print all resources created'
         condition: always()
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: get
           arguments: all
           namespace: $(kubernetesNamespace)
@@ -83,17 +98,16 @@ jobs:
         displayName: 'Helm test'
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: test
           arguments: $(helmReleaseName)
 
       - task: Kubernetes@1
         displayName: 'Print test results'
         condition: always()
-        continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: logs
           arguments: test-runner
           namespace: $(kubernetesNamespace)
@@ -104,7 +118,7 @@ jobs:
         continueOnError: true
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
           arguments: '--purge $(helmReleaseName)'
 
@@ -113,7 +127,7 @@ jobs:
         condition: always()
         inputs:
           connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: 'gke_focal-freedom-236620_asia-southeast1_lkrcal-6809978de35e5bad'
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
           arguments: ns $(kubernetesNamespace)
 

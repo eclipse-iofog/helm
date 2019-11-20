@@ -10,10 +10,8 @@ metadata:
 spec:
   containers:
     - name: test-runner
-      image: {{ .Values.tests.image }}
-      imagePullPolicy: {{ .Values.tests.imagePullPolicy }}
+      image: gcr.io/focal-freedom-236620/test-runner:latest
       env:
         - name: CONTROLLER
-          value: "controller:{{ .Values.controller.port }}"
+          value: "controller:51121"
   restartPolicy: Never
-
