@@ -86,7 +86,7 @@ kubectl create clusterrolebinding tiller-crb --clusterrole=cluster-admin --servi
  | controlPlane.database.password          |                                 | Not supported in ioFog Community Edition                                                      |
  | controlPlane.database.dbName            |                                 | Not supported in ioFog Community Edition                                                      |
  | controlPlane.controller.replicas        | 1                               | Number of replicas of Controller pods                                                         |
- | controlPlane.controller.image           | iofog/controller:1.3.0     | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
+ | controlPlane.controller.image           | iofog/controller:1.3.1     | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
  | controlPlane.controller.imagePullPolicy | Always                          | Controller Docker image [pull policy](https://kubernetes.io/docs/concepts/containers/images/) |
  | controlPlane.kubeletImage               | iofog/iofog-kubelet:1.3.0  | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
  | controlPlane.loadBalancerIp             |                                 | Pre-allocated static IP address for Controller                                                |
