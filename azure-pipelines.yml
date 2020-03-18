@@ -156,12 +156,9 @@ jobs:
           command: delete
           arguments: ns $(kubernetesNamespace)
 
-      - task: HelmDeploy@0
-        displayName: Helm package
-        inputs:
-          command: package
-          chartPath: iofog
-          destination: $(Build.ArtifactStagingDirectory)
+      - script:
+          helm package iofog --destination $(Build.ArtifactStagingDirectory)
+        displayName: 'Package Helm'
 
       - bash: |
           ARCHIVE_BASENAME=$(basename $(find $(Build.ArtifactStagingDirectory) -name '*.tgz' | head -n1))
