@@ -123,6 +123,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: test
+          namespace: $(kubernetesNamespace)
           arguments: $(helmReleaseName)
 
       - task: Kubernetes@1
@@ -143,6 +144,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
+          namespace: $(kubernetesNamespace)
           arguments: '$(helmReleaseName)'
 
       - task: Kubernetes@1
