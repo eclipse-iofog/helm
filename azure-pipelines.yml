@@ -58,7 +58,29 @@ jobs:
           releaseName: $(helmReleaseName)
 
       - task: Kubernetes@1
-        displayName: 'Wait for Operator to setup ECN'
+        displayName: 'Wait for Operator'
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
+          command: wait
+          arguments: --for=condition=ready pod -l name=iofog-operator --timeout 240s
+          namespace: $(kubernetesNamespace)
+      
+      - script: |
+          NS=$(kubernetesNamespace)
+          for SVC in skupper controller; do
+            ITER=0
+            EXT_IP=""
+            while [[ ! "$EXT_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ $ITER -lt 30 ]; do
+                sleep 10
+                EXT_IP=$(kubectl get svc -n $NS | grep $SVC | awk '{print $4}')
+                ITER=$((ITER+1))
+            done
+          done
+        displayName: 'Wait for services'
+
+      - task: Kubernetes@1
+        displayName: 'Wait for Controller'
         inputs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
@@ -103,7 +125,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: delete
-          arguments: '--purge $(helmReleaseName)'
+          arguments: '$(helmReleaseName)'
 
       - task: Kubernetes@1
         displayName: 'Delete Kubernetes namespace'
