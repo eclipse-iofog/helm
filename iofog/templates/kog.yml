@@ -1,4 +1,4 @@
-apiVersion: iofog.org/v1
+apiVersion: iofog.org/v2
 kind: Kog
 metadata:
   name: iokog
@@ -19,13 +19,8 @@ spec:
     controllerReplicaCount: {{ .Values.controlPlane.controller.replicas }}
     controllerImage: {{ .Values.controlPlane.controller.image }}
     kubeletImage: {{ .Values.controlPlane.kubeletImage }}
+    proxyImage: {{ .Values.controlPlane.proxyImage }}
+    routerImage: {{ .Values.controlPlane.routerImage }}
+    portManagerImage: {{ .Values.controlPlane.portManagerImage }}
     loadBalancerIp: {{ .Values.controlPlane.loadBalancerIp }}
     serviceType: {{ .Values.controlPlane.serviceType }}
-  connectors:
-    image: {{ .Values.connectors.image }}
-    serviceType: "LoadBalancer"
-    instances:
-      {{- range .Values.connectors.instanceNames }}
-        - name: {{ . }}
-      {{- end }}
-

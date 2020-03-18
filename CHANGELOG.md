@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add chart parameters for specifying service type of Controller and Connector
+* Add chart parameters for specifying service type of Controller
   * Supported options: `LoadBalancer`, `NodePort` and `ClusterIP`
 * Use new [ioFog operator](https://github.com/eclipse-iofog/iofog-operator)
 * Add Custom Resource Definition for the new operator 

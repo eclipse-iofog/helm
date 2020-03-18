@@ -19,14 +19,11 @@ controlPlane:
     image: "gcr.io/focal-freedom-236620/controller:develop"
     imagePullPolicy: Always
   kubeletImage: "gcr.io/focal-freedom-236620/kubelet:develop"
+  proxyImage: "iofog/proxy:develop"
+  routerImage: "iofog/router:develop"
+  portManagerImage: "gcr.io/focal-freedom-236620/port-manager:develop"
   loadBalancerIp: ""
   serviceType: "LoadBalancer"
-
-connectors:
-  image: "gcr.io/focal-freedom-236620/connector:develop"
-  instanceNames:
-    - "first"
-    - "second"
 
 operator:
   replicas: 1

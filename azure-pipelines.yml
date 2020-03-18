@@ -31,35 +31,10 @@ jobs:
       vmImage: 'Ubuntu-16.04'
 
     steps:
-      - task: HelmDeploy@0
-        displayName: 'Helm init'
-        inputs:
-          connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
-          namespace: $(kubernetesNamespace)
-          command: init
-          upgradetiller: true
-          waitForExecution: true
-          arguments: --service-account $(tillerServiceAccount)
-
-      - task: Kubernetes@1
-        displayName: 'Check custom resource definition exists'
-        continueOnError: true
-        inputs:
-          connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
-          command: get
-          arguments: crd iofogs.k8s.iofog.org
-          outputFormat: jsonpath='{.metadata.uid}'
-
-      - bash: |
-          env
-          echo "KUBERNETES1_KUBECTLOUTPUT: ${KUBERNETES1_KUBECTLOUTPUT}"
-          if [[ -z "${KUBERNETES1_KUBECTLOUTPUT}" ]]; then
-            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]true'
-          else
-            echo '##vso[task.setvariable variable=CREATE_CUSTOM_RESOURCE]false'
-          fi
+      - task: HelmInstaller@1
+        displayName: Helm installer
+        inputs: 
+          helmVersionToInstall: 3.0.2
 
       - task: HelmDeploy@0
         displayName: 'Helm install ioFog'
@@ -69,7 +44,6 @@ jobs:
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           namespace: $(kubernetesNamespace)
           command: install
-          arguments: --set createCustomResources=$(CREATE_CUSTOM_RESOURCE)
           chartType: FilePath
           chartPath: iofog
           releaseName: $(helmReleaseName)
@@ -80,7 +54,7 @@ jobs:
           connectionType: Kubernetes Service Connection
           kubernetesServiceEndpoint: $(kubernetesServiceConnection)
           command: wait
-          arguments: --for=condition=ready pod -l name=controller --timeout 120s
+          arguments: --for=condition=ready pod -l name=controller --timeout 240s
           namespace: $(kubernetesNamespace)
 
       - task: Kubernetes@1
