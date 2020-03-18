@@ -36,6 +36,15 @@ jobs:
         inputs: 
           helmVersionToInstall: 3.0.2
 
+      - task: Kubernetes@1
+        displayName: 'Create Kubernetes namespace'
+        condition: always()
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: $(kubernetesServiceConnection)
+          command: create
+          arguments: ns $(kubernetesNamespace)
+
       - task: HelmDeploy@0
         displayName: 'Helm install ioFog'
         timeoutInMinutes: 10
