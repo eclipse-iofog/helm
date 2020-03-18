@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.0.0] 
+
+* Add support for ioFog v2
+
+
 ## [v1.3.0] - *unreleased
 
 ### Features
