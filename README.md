@@ -47,13 +47,13 @@ The following commands require an installation of `Helm v3+` and `kubectl` execu
  | controlPlane.database.password          |                                 | Not supported in ioFog Community Edition                                                      |
  | controlPlane.database.dbName            |                                 | Not supported in ioFog Community Edition                                                      |
  | controlPlane.controller.replicas        | 1                               | Number of replicas of Controller pods                                                         |
- | controlPlane.controller.image           | iofog/controller:2.0.0-beta     | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
+ | controlPlane.controller.image           | iofog/controller:2.0.0-rc1      | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
  | controlPlane.controller.imagePullPolicy | Always                          | Controller Docker image [pull policy](https://kubernetes.io/docs/concepts/containers/images/) |
- | controlPlane.kubeletImage               | iofog/iofog-kubelet:2.0.0-beta  | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
+ | controlPlane.kubeletImage               | iofog/iofog-kubelet:2.0.0-rc1   | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
  | controlPlane.loadBalancerIp             |                                 | Pre-allocated static IP address for Controller                                                |
  | controlPlane.serviceType                | LoadBalancer                    | Service type for Controller (one of `LoadBalancer`, `NodePort` or `ClusterIP`)                |
  | operator.replicas                       | 1                               | Number of replicas of Operator pods                                                           |
- | operator.image                          | iofog/iofog-operator:2.0.0-beta | [OperatorDocker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                    |
+ | operator.image                          | iofog/iofog-operator:2.0.0-rc1  | [OperatorDocker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                    |
  | operator.imagePullPolicy                | Always                          | Operator Docker image [pull policy](https://kubernetes.io/docs/concepts/containers/images/)   |
 
 

@@ -9,6 +9,7 @@ spec:
     listKind: KogList
     plural: kogs
     singular: kog
+  scope: namespaced
   subresources:
     status: {}
   versions:
@@ -30,6 +31,7 @@ spec:
     listKind: ApplicationList
     plural: apps
     singular: app
+  scope: namespaced
   subresources:
     status: {}
   versions:

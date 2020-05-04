@@ -1,9 +1,8 @@
 # Changelog
 
-## [v2.0.0] 
+## [v2.0.0-rc1] 
 
-* Add support for ioFog v2
-
+* Add support for ioFog v2-rc1
 
 ## [v1.3.0] - *unreleased
 

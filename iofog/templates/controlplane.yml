@@ -1,0 +1,33 @@
+apiVersion: iofog.org/v2
+kind: ControlPlane
+metadata:
+  name: iokog
+  namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
+spec:
+  database:
+    provider: {{ .Values.controlPlane.database.provider }}
+    host: {{ .Values.controlPlane.database.host }}
+    port: {{ .Values.controlPlane.database.port }}
+    user: {{ .Values.controlPlane.database.user }}
+    password: {{ .Values.controlPlane.database.password }}
+    databaseName: {{ .Values.controlPlane.database.dbName }}
+  images:
+    controller: {{ .Values.controlPlane.controller.image }}
+    kubelet: {{ .Values.controlPlane.kubeletImage }}
+    portManager: {{ .Values.controlPlane.portManagerImage }}
+    proxy: {{ .Values.controlPlane.proxyImage }}
+    router: {{ .Values.controlPlane.routerImage }}
+  replicas:
+    controller: {{ .Values.controlPlane.controller.replicas }}
+  services:
+    controller:
+      type: LoadBalancer
+    proxy:
+      type: LoadBalancer
+    router:
+      type: LoadBalancer
+  user:
+    name: {{ .Values.controlPlane.user.firstName }}
+    surname: {{ .Values.controlPlane.user.surname }}
+    email: {{ .Values.controlPlane.user.email }}
+    password: {{ .Values.controlPlane.user.password | b64enc }}

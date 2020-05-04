@@ -16,16 +16,14 @@ controlPlane:
     dbName: ""
   controller:
     replicas: 1
-    image: "gcr.io/focal-freedom-236620/controller:2.0.0-beta"
+    image: "iofog/controller:2.0.0-rc1"
     imagePullPolicy: Always
-  kubeletImage: "gcr.io/focal-freedom-236620/kubelet:2.0.0-beta"
-  proxyImage: "iofog/proxy:2.0.0-beta"
-  routerImage: "iofog/router:2.0.0-beta"
-  portManagerImage: "gcr.io/focal-freedom-236620/port-manager:2.0.0-beta"
-  loadBalancerIp: ""
-  serviceType: "LoadBalancer"
+  kubeletImage: "iofog/iofog-kubelet:2.0.0-rc1"
+  proxyImage: "iofog/proxy:2.0.0-rc1"
+  routerImage: "iofog/router:2.0.0-rc1"
+  portManagerImage: "iofog/port-manager:2.0.0-rc1"
 
 operator:
   replicas: 1
-  image: "gcr.io/focal-freedom-236620/operator:2.0.0-beta"
+  image: "iofog/operator:2.0.0-rc1"
   imagePullPolicy: Always

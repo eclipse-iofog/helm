@@ -1,7 +1,7 @@
-appVersion: 2.0.0-beta
+appVersion: 2.0.0-rc1
 description: A Helm chart for ioFog services
 name: iofog
-version: 2.0.0-beta
+version: 2.0.0-rc1
 keywords:
   - iofog
 home: https://iofog.org/
