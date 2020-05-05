@@ -25,7 +25,7 @@ The following commands require an installation of `Helm v3+` and `kubectl` execu
  helm install my-ecn \
      --set controlPlane.user.email=user@domain.com \
      --set controlPlane.user.password=any123password345 \
-     --version 2.0.0 \
+     --version 2.0.0-rc1 \
      --namespace my-ecn \
      iofog/iofog
  ```
@@ -37,24 +37,23 @@ The following commands require an installation of `Helm v3+` and `kubectl` execu
  | Property                                | Default value                   | Description                                                                                   |
  | --------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
  | createCustomResources                   | true                            | See [Multiple Edge Compute Networks](#multiple-edge-compute-networks)                         |
- | controlPlane.userfirstName              | First                           | First name of initial user in Controller                                                      |
- | controlPlane.usersurname                | Second                          | Surname of initial user in Controller                                                         |
- | controlPlane.useremail                  | user@domain.com                 | Email (login) of initial user in Controller                                                   |
- | controlPlane.userpassword               | H23fkidf9hoibf2nlk              | Password of initial user in Controller                                                        |
- | controlPlane.database.provider          |                                 | Not supported in ioFog Community Edition                                                      |
- | controlPlane.database.host              |                                 | Not supported in ioFog Community Edition                                                      |
- | controlPlane.database.port              | 0                               | Not supported in ioFog Community Edition                                                      |
- | controlPlane.database.password          |                                 | Not supported in ioFog Community Edition                                                      |
- | controlPlane.database.dbName            |                                 | Not supported in ioFog Community Edition                                                      |
- | controlPlane.controller.replicas        | 1                               | Number of replicas of Controller pods                                                         |
- | controlPlane.controller.image           | iofog/controller:2.0.0-rc1      | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
- | controlPlane.controller.imagePullPolicy | Always                          | Controller Docker image [pull policy](https://kubernetes.io/docs/concepts/containers/images/) |
- | controlPlane.kubeletImage               | iofog/iofog-kubelet:2.0.0-rc1   | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
- | controlPlane.loadBalancerIp             |                                 | Pre-allocated static IP address for Controller                                                |
- | controlPlane.serviceType                | LoadBalancer                    | Service type for Controller (one of `LoadBalancer`, `NodePort` or `ClusterIP`)                |
- | operator.replicas                       | 1                               | Number of replicas of Operator pods                                                           |
- | operator.image                          | iofog/iofog-operator:2.0.0-rc1  | [OperatorDocker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                    |
- | operator.imagePullPolicy                | Always                          | Operator Docker image [pull policy](https://kubernetes.io/docs/concepts/containers/images/)   |
+ | user.firstName                          | First                           | First name of initial user in Controller                                                      |
+ | user.surname                            | Second                          | Surname of initial user in Controller                                                         |
+ | user.email                              | user@domain.com                 | Email (login) of initial user in Controller                                                   |
+ | user.password                           | H23fkidf9hoibf2nlk              | Password of initial user in Controller                                                        |
+ | database.provider                       |                                 | Not supported in ioFog Community Edition                                                      |
+ | database.host                           |                                 | Not supported in ioFog Community Edition                                                      |
+ | database.port                           | 0                               | Not supported in ioFog Community Edition                                                      |
+ | database.user                           |                                 | Not supported in ioFog Community Edition                                                      |
+ | database.password                       |                                 | Not supported in ioFog Community Edition                                                      |
+ | database.dbName                         |                                 | Not supported in ioFog Community Edition                                                      |
+ | images.controller                       | iofog/controller:2.0.0-rc1      | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
+ | images.kubelet                          | iofog/iofog-kubelet:2.0.0-rc1   | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
+ | images.operator                         | iofog/iofog-operator:2.0.0-rc1  | [Operator Docker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                   |
+ | images.portManager                      | iofog/port-manager:2.0.0-rc1    | [Port Manager Docker image](https://hub.docker.com/r/iofog/port-manager/tags)                 |
+ | images.proxy                            | iofog/proxy:2.0.0-rc1           | [Proxy Docker image](https://hub.docker.com/r/iofog/proxy/tags)                               |
+ | replicas.operator                       | 1                               | Number of replicas of Operator pods                                                           |
+ | replicas.controller                     | 1                               | Number of replicas of Controller pods                                                         |
 
 
 ### Connection to Installed ioFog

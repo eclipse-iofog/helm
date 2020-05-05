@@ -9,7 +9,7 @@ spec:
     listKind: KogList
     plural: kogs
     singular: kog
-  scope: namespaced
+  scope: Namespaced
   subresources:
     status: {}
   versions:

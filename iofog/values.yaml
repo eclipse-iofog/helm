@@ -2,28 +2,29 @@ defaultNamespace: "default"
 
 createCustomResources: true
 
-controlPlane:
-  user:
-    firstName: "First"
-    surname: "Second"
-    email: "user@domain.com"
-    password: "H23fkidf9hoibf2nlk"
-  database:
-    provider: ""
-    host: ""
-    port: 0
-    password: ""
-    dbName: ""
-  controller:
-    replicas: 1
-    image: "iofog/controller:2.0.0-rc1"
-    imagePullPolicy: Always
-  kubeletImage: "iofog/iofog-kubelet:2.0.0-rc1"
-  proxyImage: "iofog/proxy:2.0.0-rc1"
-  routerImage: "iofog/router:2.0.0-rc1"
-  portManagerImage: "iofog/port-manager:2.0.0-rc1"
+user:
+  firstName: "First"
+  surname: "Second"
+  email: "user@domain.com"
+  password: "H23fkidf9hoibf2nlk"
 
-operator:
-  replicas: 1
-  image: "iofog/operator:2.0.0-rc1"
-  imagePullPolicy: Always
+database:
+  provider: ""
+  host: ""
+  port: 0
+  user: ""
+  password: ""
+  dbName: ""
+
+images:
+  controller: "iofog/controller:2.0.0-rc1"
+  kubelet: "iofog/iofog-kubelet:2.0.0-rc1"
+  proxy: "iofog/proxy:2.0.0-rc1"
+  router: "iofog/router:2.0.0-rc1"
+  portManager: "iofog/port-manager:2.0.0-rc1"
+  operator: "iofog/operator:2.0.0-rc1"
+
+replicas:
+  controller: 1
+  operator: 1
+

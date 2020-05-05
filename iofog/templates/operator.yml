@@ -10,7 +10,7 @@ metadata:
   name: iofog-operator
   namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 spec:
-  replicas: {{ .Values.operator.replicas }}
+  replicas: {{ .Values.replicas.operator }}
   selector:
     matchLabels:
       name: iofog-operator
@@ -22,13 +22,13 @@ spec:
       serviceAccountName: iofog-operator
       containers:
         - name: iofog-operator
-          image: {{ .Values.operator.image }}
+          image: {{ .Values.images.operator }}
           ports:
             - containerPort: 60000
               name: metrics
           command:
             - iofog-operator
-          imagePullPolicy: {{ .Values.operator.imagePullPolicy }}
+          imagePullPolicy: Always
           readinessProbe:
             exec:
               command:

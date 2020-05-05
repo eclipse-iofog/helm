@@ -5,20 +5,20 @@ metadata:
   namespace: {{ .Release.Namespace | default .Values.defaultNamespace }}
 spec:
   database:
-    provider: {{ .Values.controlPlane.database.provider }}
-    host: {{ .Values.controlPlane.database.host }}
-    port: {{ .Values.controlPlane.database.port }}
-    user: {{ .Values.controlPlane.database.user }}
-    password: {{ .Values.controlPlane.database.password }}
-    databaseName: {{ .Values.controlPlane.database.dbName }}
+    provider: {{ .Values.database.provider }}
+    host: {{ .Values.database.host }}
+    port: {{ .Values.database.port }}
+    user: {{ .Values.database.user }}
+    password: {{ .Values.database.password }}
+    databaseName: {{ .Values.database.dbName }}
   images:
-    controller: {{ .Values.controlPlane.controller.image }}
-    kubelet: {{ .Values.controlPlane.kubeletImage }}
-    portManager: {{ .Values.controlPlane.portManagerImage }}
-    proxy: {{ .Values.controlPlane.proxyImage }}
-    router: {{ .Values.controlPlane.routerImage }}
+    controller: {{ .Values.images.controller }}
+    kubelet: {{ .Values.images.kubelet }}
+    portManager: {{ .Values.images.portManager }}
+    proxy: {{ .Values.images.proxy }}
+    router: {{ .Values.images.router }}
   replicas:
-    controller: {{ .Values.controlPlane.controller.replicas }}
+    controller: {{ .Values.replicas.controller }}
   services:
     controller:
       type: LoadBalancer
@@ -27,7 +27,7 @@ spec:
     router:
       type: LoadBalancer
   user:
-    name: {{ .Values.controlPlane.user.firstName }}
-    surname: {{ .Values.controlPlane.user.surname }}
-    email: {{ .Values.controlPlane.user.email }}
-    password: {{ .Values.controlPlane.user.password | b64enc }}
+    name: {{ .Values.user.firstName }}
+    surname: {{ .Values.user.surname }}
+    email: {{ .Values.user.email }}
+    password: {{ .Values.user.password | b64enc }}
