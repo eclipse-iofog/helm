@@ -1,7 +1,5 @@
 defaultNamespace: "default"
 
-createCustomResources: true
-
 user:
   firstName: "First"
   surname: "Second"
@@ -27,4 +25,3 @@ images:
 replicas:
   controller: 1
   operator: 1
-
