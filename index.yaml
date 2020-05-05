@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   iofog:
   - apiVersion: v1
+    appVersion: 2.0.0-rc1
+    created: "2020-05-05T03:34:12.891249699Z"
+    description: A Helm chart for ioFog services
+    digest: 7a0c011d3c8c3d5c01d76c989f0385ac2efb5c3d542b4cdc6ef509e9a9b6b8c9
+    home: https://iofog.org/
+    keywords:
+    - iofog
+    name: iofog
+    sources:
+    - https://github.com/eclipse-iofog/helm
+    urls:
+    - https://eclipse-iofog.github.io/helm/iofog-2.0.0-rc1.tgz
+    version: 2.0.0-rc1
+  - apiVersion: v1
     appVersion: 2.0.0-beta
-    created: "2020-03-18T03:36:30.148147646Z"
+    created: "2020-05-05T03:34:12.890901592Z"
     description: A Helm chart for ioFog services
     digest: b99ec732ed6e25b50c74c8b12b668772e8030bebc18ea1e8de331a46c3f6a4b9
     home: https://iofog.org/
@@ -17,7 +31,7 @@ entries:
     version: 2.0.0-beta
   - apiVersion: v1
     appVersion: 1.3.0
-    created: "2020-03-18T03:36:30.146544642Z"
+    created: "2020-05-05T03:34:12.890508984Z"
     description: A Helm chart for ioFog services
     digest: 2d6d75c612a905bb035b49c15232615e369293c33fc837dc1662c57fdfb3d223
     home: https://iofog.org/
@@ -31,7 +45,7 @@ entries:
     version: 1.3.0
   - apiVersion: v1
     appVersion: 1.3.0-rc2
-    created: "2020-03-18T03:36:30.145893959Z"
+    created: "2020-05-05T03:34:12.890145677Z"
     description: A Helm chart for ioFog services
     digest: b3dfaa182fc47d00c2f626638e36a1320395f3500b1208255487b70191cfed77
     home: https://iofog.org/
@@ -45,7 +59,7 @@ entries:
     version: 1.3.0-rc2
   - apiVersion: v1
     appVersion: 1.3.0-rc1
-    created: "2020-03-18T03:36:30.145283481Z"
+    created: "2020-05-05T03:34:12.889770969Z"
     description: A Helm chart for ioFog services
     digest: 29b2a0c99d8ba9f4d07a3b96b3c831e716eed0d3fb0bd0cdd199ab7f39c338ef
     home: https://iofog.org/
@@ -59,7 +73,7 @@ entries:
     version: 1.3.0-rc1
   - apiVersion: v1
     appVersion: 1.3.0-beta
-    created: "2020-03-18T03:36:30.144909934Z"
+    created: "2020-05-05T03:34:12.889396162Z"
     description: A Helm chart for ioFog services
     digest: 1883ef61788728fa61614a86d07d01b497750d0c1650f2d1e5ed88f60b2ae6a2
     home: https://iofog.org/
@@ -73,7 +87,7 @@ entries:
     version: 1.3.0-beta
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2020-03-18T03:36:30.144528685Z"
+    created: "2020-05-05T03:34:12.889009654Z"
     description: A Helm chart for ioFog services
     digest: d6f44abf354af856082b8ec87061100ba5f84bcb24127642d19d707001e8c944
     home: https://iofog.org/
@@ -87,11 +101,11 @@ entries:
     version: 1.2.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-18T03:36:30.144064626Z"
+    created: "2020-05-05T03:34:12.888536245Z"
     description: A Helm chart for ioFog services
     digest: 92bf52bd77594e09bd42fe4c11e8006eb3dd2350330c605261c9614e0bcf6c62
     name: iofog
     urls:
     - https://eclipse-iofog.github.io/helm/iofog-0.2.0.tgz
     version: 0.2.0
-generated: "2020-03-18T03:36:30.14338224Z"
+generated: "2020-05-05T03:34:12.88776623Z"
