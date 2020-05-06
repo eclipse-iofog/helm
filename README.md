@@ -31,8 +31,8 @@ To install a specific version of ioFog, use `helm install`:
 helm install my-ecn \
  --namespace my-ns --create-namespace \
  --version 2.0.0-rc1 \
- --set controlPlane.user.email=user@domain.com \
- --set controlPlane.user.password=any123password345 \
+ --set user.email=user@domain.com \
+ --set user.password=any123password345 \
  iofog/iofog
 ```
 
