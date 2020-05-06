@@ -10,7 +10,7 @@ metadata:
 spec:
   containers:
     - name: test-runner
-      image: iofog/test-runner:1.3
+      image: iofog/test-runner:2.0.0-rc1
       env:
         - name: CONTROLLER
           value: "controller:51121"

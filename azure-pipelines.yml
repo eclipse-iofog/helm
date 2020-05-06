@@ -86,7 +86,7 @@ jobs:
       
       - script: |
           NS=$(kubernetesNamespace)
-          for SVC in skupper controller; do
+          for SVC in router controller; do
             ITER=0
             EXT_IP=""
             while [[ ! "$EXT_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ $ITER -lt 30 ]; do
