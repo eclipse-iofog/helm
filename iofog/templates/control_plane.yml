@@ -1,7 +1,7 @@
 apiVersion: iofog.org/v2
-kind: Kog
+kind: ControlPlane
 metadata:
-  name: iokog
+  name: iofog
 spec:
   controlPlane:
     iofogUser:
@@ -16,11 +16,14 @@ spec:
       user: {{ .Values.controlPlane.database.user }}
       password: {{ .Values.controlPlane.database.password }}
       databaseName: {{ .Values.controlPlane.database.dbName }}
-    controllerReplicaCount: {{ .Values.controlPlane.controller.replicas }}
-    controllerImage: {{ .Values.controlPlane.controller.image }}
-    kubeletImage: {{ .Values.controlPlane.kubeletImage }}
-    proxyImage: {{ .Values.controlPlane.proxyImage }}
-    routerImage: {{ .Values.controlPlane.routerImage }}
-    portManagerImage: {{ .Values.controlPlane.portManagerImage }}
-    loadBalancerIp: {{ .Values.controlPlane.loadBalancerIp }}
-    serviceType: {{ .Values.controlPlane.serviceType }}
+    replicas:
+      controller: {{ .Values.controlPlane.controller.replicas }}
+    images:
+      controller: {{ .Values.controlPlane.controller.image }}
+      proxy: {{ .Values.controlPlane.proxyImage }}
+      router: {{ .Values.controlPlane.routerImage }}
+      portManager: {{ .Values.controlPlane.portManagerImage }}
+    services:
+      controller:
+        type: {{ .Values.controlPlane.serviceType }}
+        address: {{ .Values.controlPlane.loadBalancerIp }}
