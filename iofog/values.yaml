@@ -14,16 +14,22 @@ controlPlane:
     port: 0
     password: ""
     dbName: ""
-  controller:
-    replicas: 1
-    image: "gcr.io/focal-freedom-236620/controller:develop"
+  images:
+    pullSecret: ""
+    controller: "gcr.io/focal-freedom-236620/controller:develop"
+    router: "gcr.io/focal-freedom-236620/router:develop"
+    portManager: "gcr.io/focal-freedom-236620/port-manager:develop"
+    proxy: "gcr.io/focal-freedom-236620/proxy:develop"
     imagePullPolicy: Always
-  kubeletImage: "gcr.io/focal-freedom-236620/kubelet:develop"
-  proxyImage: "iofog/proxy:develop"
-  routerImage: "iofog/router:develop"
-  portManagerImage: "gcr.io/focal-freedom-236620/port-manager:develop"
-  loadBalancerIp: ""
-  serviceType: "LoadBalancer"
+  replicas:
+    controller: 1
+  services:
+    controller:
+      type: "LoadBalancer"
+    router:
+      type: "LoadBalancer"
+    proxy:
+      type: "LoadBalancer"
 
 operator:
   replicas: 1
