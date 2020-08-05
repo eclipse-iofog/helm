@@ -4,7 +4,7 @@ metadata:
   name: iofog
 spec:
   controlPlane:
-    iofogUser:
+    user:
       name: {{ .Values.controlPlane.user.firstName }}
       surname: {{ .Values.controlPlane.user.surname }}
       email: {{ .Values.controlPlane.user.email }}
