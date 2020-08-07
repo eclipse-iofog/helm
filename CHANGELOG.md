@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [v2.0.0] - 2020-08-07
+
+* Update CRD spec to match Operator v2
 
 ## [v2.0.0-rc1] - 2020-05-05
 

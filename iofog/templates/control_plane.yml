@@ -1,0 +1,29 @@
+apiVersion: iofog.org/v2
+kind: ControlPlane
+metadata:
+  name: iofog
+spec:
+  controlPlane:
+    user:
+      name: {{ .Values.controlPlane.user.firstName }}
+      surname: {{ .Values.controlPlane.user.surname }}
+      email: {{ .Values.controlPlane.user.email }}
+      password: {{ .Values.controlPlane.user.password | b64enc }}
+    database:
+      provider: {{ .Values.controlPlane.database.provider }}
+      host: {{ .Values.controlPlane.database.host }}
+      port: {{ .Values.controlPlane.database.port }}
+      user: {{ .Values.controlPlane.database.user }}
+      password: {{ .Values.controlPlane.database.password }}
+      databaseName: {{ .Values.controlPlane.database.dbName }}
+    replicas:
+      controller: {{ .Values.controlPlane.controller.replicas }}
+    images:
+      controller: {{ .Values.controlPlane.controller.image }}
+      proxy: {{ .Values.controlPlane.proxyImage }}
+      router: {{ .Values.controlPlane.routerImage }}
+      portManager: {{ .Values.controlPlane.portManagerImage }}
+    services:
+      controller:
+        type: {{ .Values.controlPlane.serviceType }}
+        address: {{ .Values.controlPlane.loadBalancerIp }}

@@ -6,13 +6,27 @@ user:
   email: "user@domain.com"
   password: "H23fkidf9hoibf2nlk"
 
-database:
-  provider: ""
-  host: ""
-  port: 0
-  user: ""
-  password: ""
-  dbName: ""
+controlPlane:
+  user:
+    firstName: "First"
+    surname: "Second"
+    email: "user@domain.com"
+    password: "H23fkidf9hoibf2nlk"
+  database:
+    provider: ""
+    host: ""
+    port: 0
+    password: ""
+    dbName: ""
+  controller:
+    replicas: 1
+    image: "gcr.io/focal-freedom-236620/controller:develop"
+    imagePullPolicy: Always
+  proxyImage: "gcr.io/focal-freedom-236620/proxy:develop"
+  routerImage: "gcr.io/focal-freedom-236620/router:develop"
+  portManagerImage: "gcr.io/focal-freedom-236620/port-manager:develop"
+  loadBalancerIp: ""
+  serviceType: "LoadBalancer"
 
 images:
   controller: "iofog/controller:2.0.0-rc1"
