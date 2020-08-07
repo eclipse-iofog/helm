@@ -1,10 +1,6 @@
 defaultNamespace: "default"
 
-user:
-  firstName: "First"
-  surname: "Second"
-  email: "user@domain.com"
-  password: "H23fkidf9hoibf2nlk"
+createCustomResources: true
 
 controlPlane:
   user:
@@ -28,14 +24,7 @@ controlPlane:
   loadBalancerIp: ""
   serviceType: "LoadBalancer"
 
-images:
-  controller: "iofog/controller:2.0.0-rc1"
-  kubelet: "iofog/iofog-kubelet:2.0.0-rc1"
-  proxy: "iofog/proxy:2.0.0-rc1"
-  router: "iofog/router:2.0.0-rc1"
-  portManager: "iofog/port-manager:2.0.0-rc1"
-  operator: "iofog/operator:2.0.0-rc1"
-
-replicas:
-  controller: 1
-  operator: 1
+operator:
+  replicas: 1
+  image: "gcr.io/focal-freedom-236620/operator:develop"
+  imagePullPolicy: Always
