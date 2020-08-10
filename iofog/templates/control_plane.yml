@@ -1,10 +1,10 @@
-apiVersion: iofog.org/v1
-kind: Kog
+apiVersion: iofog.org/v2
+kind: ControlPlane
 metadata:
-  name: iokog
+  name: iofog
 spec:
   controlPlane:
-    iofogUser:
+    user:
       name: {{ .Values.controlPlane.user.firstName }}
       surname: {{ .Values.controlPlane.user.surname }}
       email: {{ .Values.controlPlane.user.email }}
@@ -16,16 +16,14 @@ spec:
       user: {{ .Values.controlPlane.database.user }}
       password: {{ .Values.controlPlane.database.password }}
       databaseName: {{ .Values.controlPlane.database.dbName }}
-    controllerReplicaCount: {{ .Values.controlPlane.controller.replicas }}
-    controllerImage: {{ .Values.controlPlane.controller.image }}
-    kubeletImage: {{ .Values.controlPlane.kubeletImage }}
-    loadBalancerIp: {{ .Values.controlPlane.loadBalancerIp }}
-    serviceType: {{ .Values.controlPlane.serviceType }}
-  connectors:
-    image: {{ .Values.connectors.image }}
-    serviceType: "LoadBalancer"
-    instances:
-      {{- range .Values.connectors.instanceNames }}
-        - name: {{ . }}
-      {{- end }}
-
+    replicas:
+      controller: {{ .Values.controlPlane.controller.replicas }}
+    images:
+      controller: {{ .Values.controlPlane.controller.image }}
+      proxy: {{ .Values.controlPlane.proxyImage }}
+      router: {{ .Values.controlPlane.routerImage }}
+      portManager: {{ .Values.controlPlane.portManagerImage }}
+    services:
+      controller:
+        type: {{ .Values.controlPlane.serviceType }}
+        address: {{ .Values.controlPlane.loadBalancerIp }}
