@@ -30,7 +30,7 @@ To install a specific version of ioFog, use `helm install`:
 ```bash
 helm install my-ecn \
  --namespace my-ns --create-namespace \
- --version 2.0.0-rc1 \
+ --version 2.0.0 \
  --set user.email=user@domain.com \
  --set user.password=any123password345 \
  iofog/iofog
@@ -52,11 +52,11 @@ The following is a complete list of all user configurable properties for the ioF
 | database.user                           |                                 | Not supported in ioFog Community Edition                                                      |
 | database.password                       |                                 | Not supported in ioFog Community Edition                                                      |
 | database.dbName                         |                                 | Not supported in ioFog Community Edition                                                      |
-| images.controller                       | iofog/controller:2.0.0-rc1      | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
-| images.kubelet                          | iofog/iofog-kubelet:2.0.0-rc1   | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
-| images.operator                         | iofog/iofog-operator:2.0.0-rc1  | [Operator Docker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                   |
-| images.portManager                      | iofog/port-manager:2.0.0-rc1    | [Port Manager Docker image](https://hub.docker.com/r/iofog/port-manager/tags)                 |
-| images.proxy                            | iofog/proxy:2.0.0-rc1           | [Proxy Docker image](https://hub.docker.com/r/iofog/proxy/tags)                               |
+| images.controller                       | iofog/controller:2.0.0          | [Controller Docker image](https://hub.docker.com/r/iofog/controller/tags)                     |
+| images.kubelet                          | iofog/iofog-kubelet:2.0.0       | [Kubelet Docker image](https://hub.docker.com/r/iofog/iofog-kubelet/tags)                     |
+| images.operator                         | iofog/iofog-operator:2.0.0      | [Operator Docker image](https://hub.docker.com/r/iofog/iofog-operator/tags)                   |
+| images.portManager                      | iofog/port-manager:2.0.0        | [Port Manager Docker image](https://hub.docker.com/r/iofog/port-manager/tags)                 |
+| images.proxy                            | iofog/proxy:2.0.0               | [Proxy Docker image](https://hub.docker.com/r/iofog/proxy/tags)                               |
 | replicas.operator                       | 1                               | Number of replicas of Operator pods                                                           |
 | replicas.controller                     | 1                               | Number of replicas of Controller pods                                                         |
 

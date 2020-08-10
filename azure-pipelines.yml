@@ -6,7 +6,6 @@ trigger:
     include:
       - master
       - develop
-      - release/*
 pr:
   - master
   - develop
