@@ -83,14 +83,17 @@ jobs:
       
       - script: |
           NS=$(kubernetesNamespace)
-          for SVC in skupper controller; do
+          for SVC in router controller; do
             ITER=0
             EXT_IP=""
             while [[ ! "$EXT_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ $ITER -lt 30 ]; do
-                sleep 10
+                sleep 5
                 EXT_IP=$(kubectl get svc -n $NS | grep $SVC | awk '{print $4}')
                 ITER=$((ITER+1))
             done
+          done
+          for SVC in router controller; do
+            [ ! -z "$(kubectl get svc -n $NS | grep $SVC)" ]
           done
         displayName: 'Wait for services'
 
