@@ -30,3 +30,6 @@ spec:
       type: {{ .Values.controlPlane.serviceType }}
     proxy:
       type: {{ .Values.controlPlane.serviceType }}
+  controller:
+    pidBaseDir: {{ .Values.controlPlane.controller.pidBaseDir }}
+    ecnViewerPort: {{ .Values.controlPlane.controller.ecnViewerPort }}
