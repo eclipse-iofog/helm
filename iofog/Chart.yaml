@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v3
 appVersion: "0.0.0-develop"
 description: A Helm chart for ioFog services
 name: iofog

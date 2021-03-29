@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.0.0-alpha1]
+
+Bump to v3 to synchronize with other ioFog projects
+
 ## [v2.0.0] - 2020-08-07
 
 Update CRD spec to match Operator v2

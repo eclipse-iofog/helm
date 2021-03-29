@@ -25,7 +25,7 @@ The following commands require an installation of `Helm v3+` and `kubectl` execu
  helm install my-ecn \
      --set controlPlane.user.email=user@domain.com \
      --set controlPlane.user.password=any123password345 \
-     --version 2.0.0 \
+     --version 3.0.0 \
      --namespace my-ecn \
      iofog/iofog
  ```
@@ -59,7 +59,7 @@ The following commands require an installation of `Helm v3+` and `kubectl` execu
 
 ### Connection to Installed ioFog
 
-Once the installation is complete, you will be able to connect to the ioFog Controller on K8s using [iofogctl](https://iofog.org/docs/2.0.0/tools/iofogctl/usage.html).
+Once the installation is complete, you will be able to connect to the ioFog Controller on K8s using [iofogctl](https://iofog.org/docs/3.0.0/tools/iofogctl/usage.html).
 
 ```bash
 iofogctl connect k8s-ctrl --kube-config ~/.kube/config --email user@domain.com --pass any123password345
