@@ -14,4 +14,8 @@ spec:
       env:
         - name: CONTROLLER
           value: "controller:51121"
+        - name: CONTROLLER_EMAIL
+          value: "user@domain.com"
+        - name: CONTROLLER_PASSWORD
+          value: "H23fkidf9hoibf2nlk"
   restartPolicy: Never
