@@ -10,7 +10,7 @@ metadata:
 spec:
   containers:
     - name: test-runner
-      image: gcr.io/focal-freedom-236620/test-runner:latest
+      image: gcr.io/focal-freedom-236620/test-runner:3.0.0-alpha1
       env:
         - name: CONTROLLER
           value: "controller:51121"

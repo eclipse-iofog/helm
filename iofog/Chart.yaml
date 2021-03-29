@@ -1,8 +1,8 @@
 apiVersion: v3
-appVersion: "0.0.0-develop"
+appVersion: 3.0.0-alpha1
 description: A Helm chart for ioFog services
 name: iofog
-version: 0.0.0-develop
+version: 3.0.0-alpha1
 keywords:
   - iofog
 home: https://iofog.org/
