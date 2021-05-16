@@ -7,9 +7,11 @@ trigger:
       - master
       - develop
       - release/*
-
-# Setup Kubernetes service connection for Azure pipelines:
-# https://cloud.google.com/solutions/creating-cicd-pipeline-vsts-kubernetes-engine#setting_up_the_development_and_production_environments
+  paths:
+    exclude:
+      - README.md
+      - CHANGELOG.md
+      - LICENSE
 
 jobs:
   - job: Helm
