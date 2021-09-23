@@ -9,12 +9,12 @@ spec:
     email: {{ .Values.controlPlane.user.email }}
     password: {{ .Values.controlPlane.user.password | b64enc }}
   database:
-    provider: {{ .Values.controlPlane.database.provider }}
-    host: {{ .Values.controlPlane.database.host }}
-    port: {{ .Values.controlPlane.database.port }}
-    user: {{ .Values.controlPlane.database.user }}
-    password: {{ .Values.controlPlane.database.password }}
-    databaseName: {{ .Values.controlPlane.database.dbName }}
+    provider: {{ .Values.controlPlane.database.provider | quote }}
+    host: {{ .Values.controlPlane.database.host | quote }}
+    port: {{ .Values.controlPlane.database.port | default 0 }}
+    user: {{ .Values.controlPlane.database.user | quote }}
+    password: {{ .Values.controlPlane.database.password | quote }}
+    databaseName: {{ .Values.controlPlane.database.dbName | quote }}
   replicas:
     controller: {{ .Values.controlPlane.controller.replicas }}
   images:
@@ -25,7 +25,7 @@ spec:
   services:
     controller:
       type: {{ .Values.controlPlane.serviceType }}
-      address: {{ .Values.controlPlane.loadBalancerIp }}
+      address: {{ .Values.controlPlane.loadBalancerIp | quote }}
     router:
       type: {{ .Values.controlPlane.serviceType }}
     proxy:
