@@ -24,12 +24,12 @@ spec:
     portManager: {{ .Values.controlPlane.portManagerImage }}
   services:
     controller:
-      type: {{ .Values.controlPlane.serviceType }}
+      type: {{ .Values.controlPlane.controller.serviceType | default .Values.controlPlane.serviceType }}
       address: {{ .Values.controlPlane.loadBalancerIp | quote }}
     router:
-      type: {{ .Values.controlPlane.serviceType }}
+      type: {{ .Values.controlPlane.router.serviceType | default .Values.controlPlane.serviceType }}
     proxy:
-      type: {{ .Values.controlPlane.serviceType }}
+      type: {{ .Values.controlPlane.proxy.serviceType | default .Values.controlPlane.serviceType }}
   controller:
     pidBaseDir: {{ .Values.controlPlane.controller.pidBaseDir }}
     ecnViewerPort: {{ .Values.controlPlane.controller.ecnViewerPort }}
