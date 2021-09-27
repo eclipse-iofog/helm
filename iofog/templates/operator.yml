@@ -29,6 +29,7 @@ rules:
   - iofog.org
   resources:
   - apps
+  - applications
   - controlplanes
   verbs:
   - list
