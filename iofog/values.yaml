@@ -27,6 +27,9 @@ controlPlane:
   loadBalancerIp: ""
   serviceType: "LoadBalancer"
 
+  router: {}
+  proxy: {}
+
 operator:
   replicas: 1
   image: "gcr.io/focal-freedom-236620/operator:develop"
