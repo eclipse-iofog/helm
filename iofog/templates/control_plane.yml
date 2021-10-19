@@ -26,19 +26,24 @@ spec:
   {{- if eq .Values.controlPlane.ingressLoadBalancerIP "" }}
     controller:
       type: "LoadBalancer"
+      address: ""
     router:
       type: "LoadBalancer"
+      address: ""
     proxy:
       type: "LoadBalancer"
+      address: ""
   {{ else }}
     controller:
       type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
     router:
       type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
     proxy:
       type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
   {{ end }}
-      address: {{ .Values.controlPlane.ingressLoadBalancerIP | quote }}
   controller:
     pidBaseDir: {{ .Values.controlPlane.controller.pidBaseDir }}
     ecnViewerPort: {{ .Values.controlPlane.controller.ecnViewerPort }}
