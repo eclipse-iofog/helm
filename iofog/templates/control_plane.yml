@@ -38,7 +38,7 @@ spec:
     proxy:
       type: "ClusterIP"
   {{ end }}
-      address: {{ .Values.controlPlane.loadBalancerIp | quote }}
+      address: {{ .Values.controlPlane.loadBalancerIP | quote }}
   controller:
     pidBaseDir: {{ .Values.controlPlane.controller.pidBaseDir }}
     ecnViewerPort: {{ .Values.controlPlane.controller.ecnViewerPort }}
