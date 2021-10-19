@@ -23,13 +23,27 @@ spec:
     router: {{ .Values.controlPlane.routerImage }}
     portManager: {{ .Values.controlPlane.portManagerImage }}
   services:
+  {{- if eq .Values.controlPlane.ingressLoadBalancerIP "" }}
     controller:
-      type: {{ .Values.controlPlane.serviceType }}
-      address: {{ .Values.controlPlane.loadBalancerIp | quote }}
+      type: "LoadBalancer"
+      address: ""
     router:
-      type: {{ .Values.controlPlane.serviceType }}
+      type: "LoadBalancer"
+      address: ""
     proxy:
-      type: {{ .Values.controlPlane.serviceType }}
+      type: "LoadBalancer"
+      address: ""
+  {{ else }}
+    controller:
+      type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
+    router:
+      type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
+    proxy:
+      type: "ClusterIP"
+      address: {{ .Values.controlPlane.ingressLoadBalancerIP }}
+  {{ end }}
   controller:
     pidBaseDir: {{ .Values.controlPlane.controller.pidBaseDir }}
     ecnViewerPort: {{ .Values.controlPlane.controller.ecnViewerPort }}
