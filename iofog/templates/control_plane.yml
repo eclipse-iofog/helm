@@ -24,7 +24,11 @@ spec:
     portManager: {{ .Values.controlPlane.portManagerImage }}
   services:
     controller:
-      type: {{ .Values.controlPlane.serviceType }}
+    {{- if eq .Values.controlPlane.ingressLoadBalancerIP "" }}
+      type: "LoadBalancer"
+    {{ else }}
+      type: "ClusterIP"
+    {{ end }}
       address: {{ .Values.controlPlane.loadBalancerIp | quote }}
     router:
       type: {{ .Values.controlPlane.serviceType }}
