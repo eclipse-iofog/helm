@@ -1,0 +1,23 @@
+{{- if ne .Values.controlPlane.ingressHost "" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iofog
+spec:
+  rules:
+  - host: {{ .Values.controlPlane.ingressHost }}
+    http:
+      paths:
+      - path: /api
+        backend:
+          service:
+            name: controller
+            port:
+              number: 51121
+      - path: /
+        backend:
+          service:
+            name: controller
+            port:
+              number: 80
+{{ end }}

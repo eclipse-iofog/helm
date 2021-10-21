@@ -24,7 +24,7 @@ controlPlane:
   proxyImage: "gcr.io/focal-freedom-236620/proxy:develop"
   routerImage: "gcr.io/focal-freedom-236620/router:develop"
   portManagerImage: "gcr.io/focal-freedom-236620/port-manager:develop"
-  ingressLoadBalancerIP: ""
+  ingressHost: ""
 
 operator:
   replicas: 1
